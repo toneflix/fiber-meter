@@ -1,0 +1,1 @@
+{"name":"fibermeter","private":true,"version":"0.1.0","description":"FiberMeter monorepo","scripts":{"build":"pnpm -r build","test":"pnpm -r test","dev":"pnpm --parallel dev"},"devDependencies":{"typescript":"^5.5.4","vitest":"^2.1.1"},"packageManager":"pnpm@9.12.0"}
