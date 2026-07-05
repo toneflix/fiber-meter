@@ -1,21 +1,262 @@
-generator client { provider = "prisma-client-js" }
-datasource db { provider = "postgresql" url = env("DATABASE_URL") }
+generator client {
+  provider = "prisma-client-js"
+}
 
-enum ServiceStatus { active inactive }
-enum PricingModel { fixed_per_request per_unit per_1000_units }
-enum PaymentStatus { pending paid expired cancelled failed }
-enum UsageStatus { accepted charged rejected insufficient_balance }
-enum LedgerType { balance_funded usage_charged refund adjustment }
-enum LedgerDirection { credit debit }
-enum WebhookStatus { pending sent failed }
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
 
-model Developer { id String @id @default(uuid()) name String email String @unique passwordHash String createdAt DateTime @default(now()) updatedAt DateTime @updatedAt apiKeys ApiKey[] services MeteredService[] customers Customer[] paymentRequests PaymentRequest[] usageEvents UsageEvent[] ledgerEntries LedgerEntry[] webhookDeliveries WebhookDelivery[] }
-model ApiKey { id String @id @default(uuid()) developerId String name String keyHash String @unique keyPrefix String lastUsedAt DateTime? active Boolean @default(true) createdAt DateTime @default(now()) updatedAt DateTime @updatedAt developer Developer @relation(fields:[developerId], references:[id], onDelete:Cascade) }
-model MeteredService { id String @id @default(uuid()) developerId String name String slug String description String? status ServiceStatus @default(active) webhookUrl String? webhookSecret String? defaultAsset String @default("CKB") createdAt DateTime @default(now()) updatedAt DateTime @updatedAt developer Developer @relation(fields:[developerId], references:[id], onDelete:Cascade) pricingRules PricingRule[] usageEvents UsageEvent[] ledgerEntries LedgerEntry[] webhookDeliveries WebhookDelivery[] @@unique([developerId, slug]) }
-model PricingRule { id String @id @default(uuid()) serviceId String name String metricKey String unitName String pricingModel PricingModel price Decimal @db.Decimal(36,12) asset String @default("CKB") active Boolean @default(true) createdAt DateTime @default(now()) updatedAt DateTime @updatedAt service MeteredService @relation(fields:[serviceId], references:[id], onDelete:Cascade) usageEvents UsageEvent[] }
-model Customer { id String @id @default(uuid()) developerId String externalId String name String? email String? metadata Json? createdAt DateTime @default(now()) updatedAt DateTime @updatedAt developer Developer @relation(fields:[developerId], references:[id], onDelete:Cascade) balances Balance[] paymentRequests PaymentRequest[] usageEvents UsageEvent[] ledgerEntries LedgerEntry[] @@unique([developerId, externalId]) }
-model Balance { id String @id @default(uuid()) customerId String asset String availableBalance Decimal @default(0) @db.Decimal(36,12) reservedBalance Decimal @default(0) @db.Decimal(36,12) totalFunded Decimal @default(0) @db.Decimal(36,12) totalSpent Decimal @default(0) @db.Decimal(36,12) createdAt DateTime @default(now()) updatedAt DateTime @updatedAt customer Customer @relation(fields:[customerId], references:[id], onDelete:Cascade) @@unique([customerId, asset]) }
-model PaymentRequest { id String @id @default(uuid()) developerId String customerId String asset String amount Decimal @db.Decimal(36,12) status PaymentStatus @default(pending) paymentUri String provider String @default("simulated") providerReference String @unique expiresAt DateTime paidAt DateTime? metadata Json? createdAt DateTime @default(now()) updatedAt DateTime @updatedAt developer Developer @relation(fields:[developerId], references:[id], onDelete:Cascade) customer Customer @relation(fields:[customerId], references:[id], onDelete:Cascade) }
-model UsageEvent { id String @id @default(uuid()) developerId String serviceId String customerId String pricingRuleId String metricKey String quantity Decimal @db.Decimal(36,12) unitName String calculatedAmount Decimal @db.Decimal(36,12) asset String status UsageStatus idempotencyKey String metadata Json? occurredAt DateTime @default(now()) createdAt DateTime @default(now()) updatedAt DateTime @updatedAt developer Developer @relation(fields:[developerId], references:[id], onDelete:Cascade) service MeteredService @relation(fields:[serviceId], references:[id]) customer Customer @relation(fields:[customerId], references:[id]) pricingRule PricingRule @relation(fields:[pricingRuleId], references:[id]) @@unique([developerId, idempotencyKey]) }
-model LedgerEntry { id String @id @default(uuid()) developerId String customerId String serviceId String? type LedgerType direction LedgerDirection amount Decimal @db.Decimal(36,12) asset String balanceAfter Decimal @db.Decimal(36,12) referenceType String referenceId String metadata Json? createdAt DateTime @default(now()) developer Developer @relation(fields:[developerId], references:[id], onDelete:Cascade) customer Customer @relation(fields:[customerId], references:[id]) service MeteredService? @relation(fields:[serviceId], references:[id]) }
-model WebhookDelivery { id String @id @default(uuid()) developerId String serviceId String? eventType String payload Json targetUrl String status WebhookStatus @default(pending) attempts Int @default(0) lastAttemptAt DateTime? responseStatus Int? responseBody String? signature String? createdAt DateTime @default(now()) updatedAt DateTime @updatedAt developer Developer @relation(fields:[developerId], references:[id], onDelete:Cascade) service MeteredService? @relation(fields:[serviceId], references:[id]) }
+enum ServiceStatus {
+  active
+  inactive
+}
+
+enum PricingModel {
+  fixed_per_request
+  per_unit
+  per_1000_units
+}
+
+enum PaymentStatus {
+  pending
+  paid
+  expired
+  cancelled
+  failed
+}
+
+enum UsageStatus {
+  accepted
+  charged
+  rejected
+  insufficient_balance
+}
+
+enum LedgerType {
+  balance_funded
+  usage_charged
+  refund
+  adjustment
+}
+
+enum LedgerDirection {
+  credit
+  debit
+}
+
+enum WebhookStatus {
+  pending
+  sent
+  failed
+}
+
+model Developer {
+  id        String   @id @default(uuid())
+  name      String
+  email     String   @unique
+  passwordHash String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  apiKeys           ApiKey[]
+  services          MeteredService[]
+  customers         Customer[]
+  paymentRequests   PaymentRequest[]
+  usageEvents       UsageEvent[]
+  ledgerEntries     LedgerEntry[]
+  webhookDeliveries WebhookDelivery[]
+}
+
+model ApiKey {
+  id          String    @id @default(uuid())
+  developerId String
+  name        String
+  keyHash     String    @unique
+  keyPrefix   String
+  lastUsedAt  DateTime?
+  active      Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  developer Developer @relation(fields: [developerId], references: [id], onDelete: Cascade)
+
+  @@index([developerId])
+}
+
+model MeteredService {
+  id            String        @id @default(uuid())
+  developerId   String
+  name          String
+  slug          String
+  description   String?
+  status        ServiceStatus @default(active)
+  webhookUrl    String?
+  webhookSecret String?
+  defaultAsset  String        @default("CKB")
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  developer         Developer          @relation(fields: [developerId], references: [id], onDelete: Cascade)
+  pricingRules      PricingRule[]
+  usageEvents       UsageEvent[]
+  ledgerEntries     LedgerEntry[]
+  webhookDeliveries WebhookDelivery[]
+
+  @@unique([developerId, slug])
+  @@index([developerId])
+}
+
+model PricingRule {
+  id           String       @id @default(uuid())
+  serviceId    String
+  name         String
+  metricKey    String
+  unitName     String
+  pricingModel PricingModel
+  price        Decimal      @db.Decimal(36, 12)
+  asset        String       @default("CKB")
+  active       Boolean      @default(true)
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+
+  service     MeteredService @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  usageEvents UsageEvent[]
+
+  @@index([serviceId, metricKey, active])
+}
+
+model Customer {
+  id          String   @id @default(uuid())
+  developerId String
+  externalId  String
+  name        String?
+  email       String?
+  metadata    Json?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  developer       Developer        @relation(fields: [developerId], references: [id], onDelete: Cascade)
+  balances        Balance[]
+  paymentRequests PaymentRequest[]
+  usageEvents     UsageEvent[]
+  ledgerEntries   LedgerEntry[]
+
+  @@unique([developerId, externalId])
+  @@index([developerId])
+}
+
+model Balance {
+  id               String   @id @default(uuid())
+  customerId       String
+  asset            String
+  availableBalance Decimal  @default(0) @db.Decimal(36, 12)
+  reservedBalance  Decimal  @default(0) @db.Decimal(36, 12)
+  totalFunded      Decimal  @default(0) @db.Decimal(36, 12)
+  totalSpent       Decimal  @default(0) @db.Decimal(36, 12)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  customer Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+
+  @@unique([customerId, asset])
+}
+
+model PaymentRequest {
+  id                String        @id @default(uuid())
+  developerId       String
+  customerId        String
+  asset             String
+  amount            Decimal       @db.Decimal(36, 12)
+  status            PaymentStatus @default(pending)
+  paymentUri        String
+  provider          String        @default("simulated")
+  providerReference String        @unique
+  expiresAt         DateTime
+  paidAt            DateTime?
+  metadata          Json?
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+
+  developer Developer @relation(fields: [developerId], references: [id], onDelete: Cascade)
+  customer  Customer  @relation(fields: [customerId], references: [id], onDelete: Cascade)
+
+  @@index([developerId, status])
+  @@index([customerId])
+}
+
+model UsageEvent {
+  id               String      @id @default(uuid())
+  developerId      String
+  serviceId        String
+  customerId       String
+  pricingRuleId    String
+  metricKey        String
+  quantity         Decimal     @db.Decimal(36, 12)
+  unitName         String
+  calculatedAmount Decimal     @db.Decimal(36, 12)
+  asset            String
+  status           UsageStatus
+  idempotencyKey   String
+  metadata         Json?
+  occurredAt       DateTime    @default(now())
+  createdAt        DateTime    @default(now())
+  updatedAt        DateTime    @updatedAt
+
+  developer   Developer       @relation(fields: [developerId], references: [id], onDelete: Cascade)
+  service     MeteredService  @relation(fields: [serviceId], references: [id])
+  customer    Customer        @relation(fields: [customerId], references: [id])
+  pricingRule PricingRule     @relation(fields: [pricingRuleId], references: [id])
+
+  @@unique([developerId, idempotencyKey])
+  @@index([developerId, status])
+  @@index([serviceId, metricKey])
+  @@index([customerId])
+}
+
+model LedgerEntry {
+  id            String          @id @default(uuid())
+  developerId   String
+  customerId    String
+  serviceId     String?
+  type          LedgerType
+  direction     LedgerDirection
+  amount        Decimal         @db.Decimal(36, 12)
+  asset         String
+  balanceAfter  Decimal         @db.Decimal(36, 12)
+  referenceType String
+  referenceId   String
+  metadata      Json?
+  createdAt     DateTime        @default(now())
+
+  developer Developer       @relation(fields: [developerId], references: [id], onDelete: Cascade)
+  customer  Customer        @relation(fields: [customerId], references: [id])
+  service   MeteredService? @relation(fields: [serviceId], references: [id])
+
+  @@index([developerId, createdAt])
+  @@index([customerId])
+  @@index([referenceType, referenceId])
+}
+
+model WebhookDelivery {
+  id             String        @id @default(uuid())
+  developerId    String
+  serviceId      String?
+  eventType      String
+  payload        Json
+  targetUrl      String
+  status         WebhookStatus @default(pending)
+  attempts       Int           @default(0)
+  lastAttemptAt  DateTime?
+  responseStatus Int?
+  responseBody   String?
+  signature      String?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  developer Developer       @relation(fields: [developerId], references: [id], onDelete: Cascade)
+  service   MeteredService? @relation(fields: [serviceId], references: [id])
+
+  @@index([developerId, status])
+  @@index([serviceId])
+}
