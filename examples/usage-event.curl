@@ -1,0 +1,4 @@
+curl -X POST http://localhost:4000/api/usage-events \
+  -H "x-api-key: fm_YOUR_KEY" \
+  -H "content-type: application/json" \
+  -d '{"service":"ai-summary","customer":"cus_demo_001","metricKey":"tokens","quantity":1250,"idempotencyKey":"req_123"}'
