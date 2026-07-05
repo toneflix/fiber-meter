@@ -36,6 +36,8 @@ flowchart LR
 
 ## Local setup
 
+### Option A: Docker PostgreSQL
+
 ```bash
 pnpm install
 docker compose up -d postgres
@@ -45,6 +47,48 @@ pnpm --filter @fibermeter/api prisma:migrate
 pnpm --filter @fibermeter/api seed
 pnpm dev
 ```
+
+### Option B: Local PostgreSQL without Docker
+
+Use this path if Docker is unavailable or you already run PostgreSQL locally.
+
+1. Install PostgreSQL 15+ using your OS package manager or a native installer.
+2. Start PostgreSQL locally. Examples:
+
+   ```bash
+   # macOS Homebrew
+   brew services start postgresql@16
+
+   # Ubuntu/Debian system service
+   sudo service postgresql start
+   ```
+
+3. Create the FiberMeter role and database:
+
+   ```bash
+   createuser fibermeter --pwprompt
+   createdb fibermeter --owner fibermeter
+   ```
+
+   Use `fibermeter` as the password to match the default examples, or choose your own password and update `DATABASE_URL`.
+
+4. Configure the API environment:
+
+   ```bash
+   cp apps/api/.env.example apps/api/.env
+   # Edit DATABASE_URL if your local username, password, host, port, or database differs.
+   # Default: postgresql://fibermeter:fibermeter@localhost:5432/fibermeter?schema=public
+   ```
+
+5. Generate Prisma client, run migrations, seed demo data, and start the apps:
+
+   ```bash
+   pnpm install
+   pnpm --filter @fibermeter/api prisma:generate
+   pnpm --filter @fibermeter/api prisma:migrate
+   pnpm --filter @fibermeter/api seed
+   pnpm dev
+   ```
 
 Demo login: `demo@fibermeter.dev` / `password123`.
 
