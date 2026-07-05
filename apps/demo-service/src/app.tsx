@@ -1,0 +1,35 @@
+import { useState } from 'react'
+
+export function App() {
+  const [text, setText] = useState(
+    'FiberMeter lets AI tools charge prepaid balances through Fiber-native metering infrastructure.',
+  )
+
+  const tokens = Math.ceil(text.length / 4)
+  const cost = ((tokens * 10) / 1000).toFixed(4)
+  const summary = text.split(/[.!?]/)[0] || text.slice(0, 120)
+
+  return (
+    <main className="main">
+      <h1>AI Summary API Demo</h1>
+      <div className="grid">
+        <section className="card">
+          <h2>Submit text</h2>
+          <textarea rows={8} style={{ width: '100%' }} value={text} onChange={(event) => setText(event.target.value)} />
+          <p>
+            {tokens} tokens · {cost} CKB at 10 CKB / 1,000 tokens
+          </p>
+          <button onClick={() => alert('Demo: SDK records usage, FiberMeter deducts balance, then returns summary.')}>
+            Summarize and charge
+          </button>
+        </section>
+
+        <section className="card">
+          <h2>Fake summary</h2>
+          <p>{summary}.</p>
+          <span className="badge">Metered by FiberMeter</span>
+        </section>
+      </div>
+    </main>
+  )
+}
