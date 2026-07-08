@@ -1,35 +1,57 @@
 # FiberMeter demo walkthrough
 
-FiberMeter is reusable Fiber Network infrastructure for prepaid balances, service metering, payment tracking, ledgering, and signed webhooks.
+FiberMeter is reusable Fiber Network infrastructure for prepaid balances, service
+metering, payment tracking, ledgering, and signed webhooks.
 
 ## What is working
 
-- Express API, Prisma schema, seed data, simulated Fiber payment requests, usage charging, insufficient-balance responses, ledger entries, and webhook delivery records.
-- React dashboard shell, AI Summary demo shell, TypeScript SDK, Docker PostgreSQL setup.
+- **API** — Express + Prisma, seed data, simulated Fiber payment requests, usage
+  charging, insufficient-balance handling, append-only ledger entries, and webhook
+  delivery records.
+- **Dashboard** — polished React app covering services, pricing rules, customers,
+  balances, payment requests, usage events, webhooks, and a developer quickstart.
+  Runs against the **live API** (JWT) or a fully **in-browser demo** engine.
+- **Demo Service** — an AI Summary API that meters usage through FiberMeter.
+- **SDK** — TypeScript SDK; **Docker** PostgreSQL setup.
 
 ## What is simulated
 
-The MVP uses `SimulatedFiberPaymentProvider`, generating `fiber-sim://pay?...` URIs and a `/simulate-paid` endpoint. The `LiveFiberPaymentProvider` is a clean placeholder for wallet/node RPC settlement verification.
+The MVP uses `SimulatedFiberPaymentProvider`, generating `fiber-sim://pay?...`
+URIs and a `/simulate-paid` endpoint. `LiveFiberPaymentProvider` is a clean
+placeholder for wallet/node RPC settlement verification (see
+`docs/08-fiber-integration.md`).
+
+## Two ways to demo
+
+- **Live** — run the API (`pnpm dev` after seeding) and sign in at the dashboard
+  with `demo@fibermeter.dev` / `password123`. Everything reads/writes PostgreSQL.
+- **Demo (no backend)** — `pnpm --filter @fibermeter/dashboard dev`, then click
+  **Explore in demo mode**. The whole flow runs client-side — perfect for a video.
+
+The header badge always shows **Live** vs **Demo**.
+
+## Demo script (2–3 minutes)
+
+1. Open the dashboard. Note the mode badge (Live or Demo).
+2. **Overview** — stat cards: funded, usage charged, customers, usage events.
+3. **Services** — open *AI Summary API*; show the pricing rule **10 CKB per 1,000
+   tokens** and copy the service slug.
+4. **Customers** — *Ada Demo* (`cus_demo_001`) with a **100 CKB** balance.
+5. (Live only) **Quickstart** — create an API key; copy it once.
+6. Open the **Demo Service** (`/demo-service`).
+7. Paste text and click **Summarize** → usage is recorded.
+8. FiberMeter calculates the charge and deducts the balance.
+9. Back on **Usage Events**, the charge appears (filter by status = charged).
+10. **Webhooks** — expand the `usage.charged` delivery payload.
+11. In the demo app, submit a very large text that exceeds the balance.
+12. See the **insufficient balance / payment required** response.
+13. **Payment Requests** — create a request for the customer; copy the payment URI.
+14. Click **Simulate Paid** (the simulated Fiber payment).
+15. The balance is funded; a `balance.funded` webhook is emitted.
+16. Retry the summary → it now succeeds.
 
 ## Production hardening
 
-Add live Fiber verification, queue-backed webhook retries, row-level balance locking strategy review, rate limits, audit logs, secrets management, and hosted deployments.
-
-## Demo script
-
-1. Open dashboard overview.
-2. Show AI Summary API service.
-3. Show pricing rule: 10 CKB per 1,000 tokens.
-4. Show customer balance: 100 CKB.
-5. Open demo AI Summary app.
-6. Submit text.
-7. Demo app records usage.
-8. FiberMeter deducts balance.
-9. Dashboard shows usage charged.
-10. Show webhook delivery.
-11. Submit larger usage that exceeds balance.
-12. Show insufficient balance.
-13. Create payment request.
-14. Simulate Fiber payment.
-15. Show balance funded.
-16. Retry usage successfully.
+Live Fiber verification, queue-backed webhook retries, balance-locking review,
+rate limits, audit logs, secrets management, and hosted deployments. See
+[ROADMAP.md](../ROADMAP.md).

@@ -30,9 +30,12 @@ flowchart LR
 - Developer auth, JWT dashboard APIs, hashed API keys for ingestion.
 - Metered services, pricing rules, customers, balances, payment requests, usage events, ledger entries, and webhook delivery logs.
 - Simulated Fiber payment provider plus live-provider placeholder.
-- React dashboard and AI Summary demo app shells.
+- Polished React dashboard (services, pricing rules, customers, balances, payment
+  requests, usage events, webhooks, quickstart) that runs against the **live API**
+  or a fully **in-browser demo** engine — selectable at login.
+- AI Summary demo app that meters usage through FiberMeter end-to-end.
 - TypeScript SDK with `recordUsage`, `createCustomer`, `createPaymentRequest`, `getBalance`, and webhook verification.
-- Hackathon-ready docs and submission writeup.
+- Hackathon-ready docs, submission writeup, and phased [ROADMAP](ROADMAP.md).
 
 ## Local setup
 
@@ -77,7 +80,7 @@ Use this path if Docker is unavailable or you already run PostgreSQL locally.
    ```bash
    cp apps/api/.env.example apps/api/.env
    # Edit DATABASE_URL if your local username, password, host, port, or database differs.
-   # Default: postgresql://fibermeter:fibermeter@localhost:5432/fibermeter?schema=public
+   # Default: postgresql://postgres:postgres@localhost:5432/fibermeter?schema=public
    ```
 
 5. Generate Prisma client, run migrations, seed demo data, and start the apps:
@@ -92,6 +95,24 @@ Use this path if Docker is unavailable or you already run PostgreSQL locally.
 
 Demo login: `demo@fibermeter.dev` / `password123`.
 
+## Dashboard (Live + Demo modes)
+
+The dashboard (`apps/dashboard`) can be explored two ways:
+
+- **Live** — sign in as the seeded developer (`demo@fibermeter.dev` /
+  `password123`) and the dashboard reads/writes the real API over JWT.
+- **Demo** — click **Explore in demo mode** to run the entire billing engine
+  in the browser. No backend, database, or seed required — ideal for a quick
+  look or an offline demo video.
+
+```bash
+# Zero-backend preview:
+pnpm --filter @fibermeter/dashboard dev   # then choose "Explore in demo mode"
+```
+
+A badge in the header always shows which mode is active. In Live mode, create an
+API key on the **Quickstart** page — the Demo Service uses it to ingest usage.
+
 ## API example
 
 ```bash
@@ -104,10 +125,19 @@ curl -X POST http://localhost:4000/api/usage-events \
 ## SDK example
 
 ```ts
-import { FiberMeter } from '@fibermeter/sdk'
+import { FiberMeter } from '@fibermeter/sdk';
 
-const meter = new FiberMeter({ apiKey: process.env.FIBERMETER_API_KEY, baseUrl: 'http://localhost:4000' })
-await meter.recordUsage({ service: 'ai-summary', customer: 'cus_demo_001', metricKey: 'tokens', quantity: 1250, idempotencyKey: 'req_123' })
+const meter = new FiberMeter({
+  apiKey: process.env.FIBERMETER_API_KEY,
+  baseUrl: 'http://localhost:4000',
+});
+await meter.recordUsage({
+  service: 'ai-summary',
+  customer: 'cus_demo_001',
+  metricKey: 'tokens',
+  quantity: 1250,
+  idempotencyKey: 'req_123',
+});
 ```
 
 ## Webhooks
@@ -125,7 +155,10 @@ Category: **Merchant, Liquidity, LSP, and Multi-Asset Infrastructure**. FiberMet
 
 ## Roadmap
 
-Live Fiber settlement verification, multi-asset support beyond CKB, hosted webhook workers, invoice exports, billing portals, wallet connectors, and production-grade observability.
+See [ROADMAP.md](ROADMAP.md) for the full phased plan — from the hackathon MVP
+(Phase 0) through live Fiber settlement, production hardening, multi-tenancy/RBAC,
+subscriptions and tiered pricing, real-time analytics, an SDK ecosystem, scale,
+and go-to-market.
 
 ## License
 

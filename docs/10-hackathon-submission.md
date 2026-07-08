@@ -20,7 +20,12 @@ TBD.
 
 ## Technical breakdown
 
-Monorepo with Express/TypeScript API, PostgreSQL/Prisma, React dashboard, React demo service, TypeScript SDK, Docker PostgreSQL, and Markdown docs.
+Monorepo with Express/TypeScript API, PostgreSQL/Prisma, a polished React
+dashboard (TanStack Query over the live API, with an in-browser demo fallback),
+a React AI-Summary demo service, a TypeScript SDK, Docker PostgreSQL, and
+Markdown docs. The dashboard authenticates developers via JWT and manages hashed
+API keys, services, pricing rules, customers, prepaid balances, payment requests,
+metered usage, an append-only ledger, and signed webhook deliveries.
 
 ## Fiber infrastructure gap addressed
 
@@ -32,4 +37,8 @@ AI tooling was used as an execution accelerator for scaffolding and documentatio
 
 ## Future roadmap
 
-Live Fiber provider integration, multi-asset settlement, wallet UX, queue-backed webhooks, hosted SaaS option, and richer analytics.
+Live Fiber provider integration, multi-asset settlement, wallet UX, queue-backed
+webhooks, hosted SaaS option, and richer analytics. The full phased plan (Phase 0
+hackathon MVP through production, multi-tenancy, subscriptions, real-time
+analytics, SDK ecosystem, scale, and go-to-market) is in
+[ROADMAP.md](../ROADMAP.md).

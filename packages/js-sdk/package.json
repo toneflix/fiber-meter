@@ -1,1 +1,15 @@
-{"name":"@fibermeter/sdk","version":"0.1.0","type":"module","main":"dist/index.js","types":"dist/index.d.ts","scripts":{"build":"tsc -p tsconfig.json","test":"vitest run --passWithNoTests"},"dependencies":{},"devDependencies":{"@types/node":"^22.5.4","typescript":"^5.5.4"}}
+{
+    "name": "@fibermeter/sdk",
+    "version": "0.1.0",
+    "type": "module",
+    "main": "dist/index.js",
+    "types": "dist/index.d.ts",
+    "scripts": {
+        "build": "tsc -p tsconfig.json",
+        "test": "vitest run --passWithNoTests"
+    },
+    "devDependencies": {
+        "@types/node": "^22.20.0",
+        "typescript": "^5.5.4"
+    }
+}
