@@ -20,7 +20,12 @@ export interface FiberPaymentProvider {
 }
 
 export class SimulatedFiberPaymentProvider implements FiberPaymentProvider {
-  async createPaymentRequest(input: { amount: string; asset: string; customerId: string }) {
+  async createPaymentRequest(input: {
+    amount: string;
+    asset: string;
+    metadata?: object
+    customerId: string;
+  }) {
     const providerReference = `sim_${crypto.randomUUID()}`
 
     return {
