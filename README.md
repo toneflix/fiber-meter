@@ -30,6 +30,7 @@ flowchart LR
 - Developer auth, JWT dashboard APIs, hashed API keys for ingestion.
 - Metered services, pricing rules, customers, balances, payment requests, usage events, ledger entries, and webhook delivery logs.
 - Simulated Fiber payment provider plus live-provider placeholder.
+- **Payment preflight (PayReady)** — `POST /api/fiber/preflight` checks node health, invoice validity, peers, liquidity, and dry-run route before `send_payment`. Dashboard page: **Preflight**.
 - Polished React dashboard (services, pricing rules, customers, balances, payment
   requests, usage events, webhooks, quickstart) that runs against the **live API**
   or a fully **in-browser demo** engine — selectable at login.

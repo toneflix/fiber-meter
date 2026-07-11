@@ -8,6 +8,7 @@ import {
   Terminal,
   Settings,
   LogOut,
+  ShieldCheck,
   Zap } from
 'lucide-react';
 import { cn } from '../lib/utils';
@@ -36,6 +37,11 @@ const navItems = [
   name: 'Payment Requests',
   href: '/payments',
   icon: CreditCard
+},
+{
+  name: 'Preflight',
+  href: '/preflight',
+  icon: ShieldCheck
 },
 {
   name: 'Usage Events',

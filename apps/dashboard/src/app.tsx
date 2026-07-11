@@ -11,6 +11,7 @@ import { PaymentRequests } from './pages/PaymentRequests';
 import { UsageEvents } from './pages/UsageEvents';
 import { Webhooks } from './pages/Webhooks';
 import { Quickstart } from './pages/Quickstart';
+import { Preflight } from './pages/Preflight';
 import { DemoService } from './pages/DemoService';
 
 const queryClient = new QueryClient({
@@ -39,6 +40,7 @@ export function App() {
                 <Route path="services" element={<Services />} />
                 <Route path="customers" element={<Customers />} />
                 <Route path="payments" element={<PaymentRequests />} />
+                <Route path="preflight" element={<Preflight />} />
                 <Route path="usage" element={<UsageEvents />} />
                 <Route path="webhooks" element={<Webhooks />} />
                 <Route path="quickstart" element={<Quickstart />} />

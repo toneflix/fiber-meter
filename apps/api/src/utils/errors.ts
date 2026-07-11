@@ -22,8 +22,10 @@ export function sendError(res: Response, error: ApiError) {
 }
 
 export const errorHandler: ErrorRequestHandler = (error, _req, res, _next) => {
-  sendError(
-    res,
-    error instanceof ApiError ? error : new ApiError('internal_error', 'Internal server error', 500),
-  )
+  if (error instanceof ApiError) {
+    return sendError(res, error)
+  }
+
+  const message = error instanceof Error ? error.message : 'Internal server error'
+  return sendError(res, new ApiError('internal_error', message, 500))
 }

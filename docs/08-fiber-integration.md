@@ -2,15 +2,44 @@
 
 FiberMeter is reusable Fiber Network infrastructure for prepaid balances, service metering, payment tracking, ledgering, and signed webhooks.
 
-## What is working
+## Modes
 
-- Express API, Prisma schema, seed data, simulated Fiber payment requests, usage charging, insufficient-balance responses, ledger entries, and webhook delivery records.
-- React dashboard shell, AI Summary demo shell, TypeScript SDK, Docker PostgreSQL setup.
+| `FIBER_PROVIDER` | Create payment | Confirm payment |
+|------------------|----------------|-----------------|
+| `simulated` | `fiber-sim://…` URI | `POST /api/payment-requests/:id/simulate-paid` |
+| `live` | Fiber RPC `new_invoice` → `fibt1…` | Pay invoice, then `POST /api/payment-requests/:id/verify` |
 
-## What is simulated
+## Live env
 
-The MVP uses `SimulatedFiberPaymentProvider`, generating `fiber-sim://pay?...` URIs and a `/simulate-paid` endpoint. The `LiveFiberPaymentProvider` is a clean placeholder for wallet/node RPC settlement verification.
+```env
+FIBER_PROVIDER=live
+FIBER_RPC_URL=http://127.0.0.1:8227
+FIBER_CURRENCY=Fibt
+FIBER_INVOICE_EXPIRY_SECS=3600
+```
 
-## Production hardening
+## Live flow
 
-Add live Fiber verification, queue-backed webhook retries, row-level balance locking strategy review, rate limits, audit logs, secrets management, and hosted deployments.
+1. Dashboard creates a payment request (CKB amount).
+2. API calls Fiber `new_invoice` (amount in shannons hex, currency `Fibt` on testnet).
+3. Dashboard shows the encoded invoice (`fibt1…`) and **Verify on Fiber**.
+4. Optional: **Preflight** runs PayReady checks against `FIBER_RPC_URL`.
+5. A payer node / wallet calls Fiber `send_payment` with that invoice.
+6. Dashboard **Verify on Fiber** calls `get_invoice` by `payment_hash`; when status is `Paid`, FiberMeter credits the prepaid balance and emits `balance.funded`.
+
+## RPC methods used
+
+- `new_invoice` — create top-up invoice
+- `get_invoice` — verify settlement
+- `node_info` / `parse_invoice` / `list_peers` / `list_channels` / `send_payment` (dry_run) — Preflight module
+
+## Files
+
+- `apps/api/src/providers/fiber/fiber-provider.ts` — simulated + live providers
+- `apps/api/src/modules/preflight/` — PayReady RPC / preflight / errors
+- `POST /api/payment-requests/:id/verify`
+- `GET /api/fiber/config` — current provider mode
+
+## Still manual for a full demo
+
+Someone must **pay** the invoice from a Fiber node with liquidity (`send_payment`). FiberMeter does not auto-pay itself.

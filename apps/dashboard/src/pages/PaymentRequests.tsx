@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { useData } from '../lib/useData';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/Card';
 import {
@@ -13,20 +14,29 @@ import { Badge } from '../components/ui/Badge';
 import { Button } from '../components/ui/Button';
 import { Input } from '../components/ui/Input';
 import { TableSkeletonRows } from '../components/DataStates';
+
+function isSimulatedUri(uri: string, provider?: string) {
+  return provider === 'simulated' || uri.startsWith('fiber-sim://');
+}
+
 export function PaymentRequests() {
+  const navigate = useNavigate();
   const {
     paymentRequests,
     customers,
     createPaymentRequest,
     simulatePaymentPaid,
+    verifyPaymentRequest,
     isLoading
   } = useData();
   const [isAdding, setIsAdding] = useState(false);
+  const [busyId, setBusyId] = useState<string | null>(null);
   const [newReq, setNewReq] = useState({
     customerId: '',
     amount: '',
     asset: 'CKB'
   });
+
   const handleAdd = async (e: React.FormEvent) => {
     e.preventDefault();
     await createPaymentRequest({
@@ -41,6 +51,25 @@ export function PaymentRequests() {
       asset: 'CKB'
     });
   };
+
+  const handleVerify = async (id: string) => {
+    setBusyId(id);
+    try {
+      await verifyPaymentRequest(id);
+    } finally {
+      setBusyId(null);
+    }
+  };
+
+  const handleSimulate = async (id: string) => {
+    setBusyId(id);
+    try {
+      await simulatePaymentPaid(id);
+    } finally {
+      setBusyId(null);
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -49,7 +78,11 @@ export function PaymentRequests() {
             Payment Requests
           </h1>
           <p className="text-zinc-500">
-            Manage Fiber payment requests to fund customer balances.
+            Fund customer balances with Fiber invoices. For live invoices, run{' '}
+            <Link to="/preflight" className="text-blue-600 hover:underline">
+              Preflight
+            </Link>
+            , pay with a Fiber node, then <strong>Verify on Fiber</strong>.
           </p>
         </div>
         <Button onClick={() => setIsAdding(!isAdding)}>
@@ -87,7 +120,7 @@ export function PaymentRequests() {
                   </select>
                 </div>
                 <div className="space-y-2">
-                  <label className="text-sm font-medium">Amount</label>
+                  <label className="text-sm font-medium">Amount (CKB)</label>
                   <Input
                   type="number"
                   step="0.01"
@@ -99,7 +132,7 @@ export function PaymentRequests() {
                     amount: e.target.value
                   })
                   }
-                  placeholder="100" />
+                  placeholder="1" />
                 
                 </div>
                 <div className="space-y-2">
@@ -131,6 +164,7 @@ export function PaymentRequests() {
                 <TableHead>Customer</TableHead>
                 <TableHead>Amount</TableHead>
                 <TableHead>Payment URI</TableHead>
+                <TableHead>Provider</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
               </TableRow>
@@ -138,6 +172,7 @@ export function PaymentRequests() {
             <TableBody>
               {paymentRequests.map((req) => {
                 const customer = customers.find((c) => c.id === req.customerId);
+                const simulated = isSimulatedUri(req.paymentUri, req.provider);
                 return (
                   <TableRow key={req.id}>
                     <TableCell className="text-zinc-500">
@@ -154,11 +189,16 @@ export function PaymentRequests() {
                         onClick={() =>
                         navigator.clipboard.writeText(req.paymentUri)
                         }
-                        title="Click to copy payment URI"
+                        title="Click to copy payment URI / invoice"
                         className="font-mono text-xs text-blue-600 hover:underline truncate block w-full text-left">
                         
                         {req.paymentUri}
                       </button>
+                    </TableCell>
+                    <TableCell>
+                      <Badge variant="outline">
+                        {req.provider ?? (simulated ? 'simulated' : 'live')}
+                      </Badge>
                     </TableCell>
                     <TableCell>
                       <Badge
@@ -173,27 +213,51 @@ export function PaymentRequests() {
                         {req.status}
                       </Badge>
                     </TableCell>
-                    <TableCell className="text-right">
-                      {req.status === 'pending' &&
+                    <TableCell className="text-right space-x-2">
+                      {req.status === 'pending' && simulated &&
                       <Button
                         size="sm"
                         variant="outline"
-                        onClick={() => simulatePaymentPaid(req.id)}>
+                        disabled={busyId === req.id}
+                        onClick={() => void handleSimulate(req.id)}>
                         
-                          Simulate Paid
+                          {busyId === req.id ? '…' : 'Simulate Paid'}
                         </Button>
+                      }
+                      {req.status === 'pending' && !simulated &&
+                      <>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => {
+                              sessionStorage.setItem(
+                                'fibermeter_preflight_invoice',
+                                req.paymentUri,
+                              );
+                              navigate('/preflight');
+                            }}>
+                            Preflight
+                          </Button>
+                          <Button
+                            size="sm"
+                            disabled={busyId === req.id}
+                            onClick={() => void handleVerify(req.id)}>
+                            
+                            {busyId === req.id ? 'Checking…' : 'Verify on Fiber'}
+                          </Button>
+                        </>
                       }
                     </TableCell>
                   </TableRow>);
 
               })}
               {isLoading && paymentRequests.length === 0 &&
-              <TableSkeletonRows rows={3} cols={6} />
+              <TableSkeletonRows rows={3} cols={7} />
               }
               {!isLoading && paymentRequests.length === 0 &&
               <TableRow>
                   <TableCell
-                  colSpan={6}
+                  colSpan={7}
                   className="text-center text-zinc-500 py-8">
 
                     No payment requests found.

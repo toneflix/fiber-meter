@@ -1,6 +1,7 @@
 import { fiberProvider } from '../../providers/fiber/fiber-provider.js'
 import { money } from '../../utils/money.js'
 import { prisma } from '../../db/prisma.js'
+import { ApiError } from '../../utils/errors.js'
 import { webhookService } from '../webhooks/webhook.service.js'
 
 export class PaymentRequestService {
@@ -17,7 +18,7 @@ export class PaymentRequestService {
       amount: input.amount,
       asset: input.asset,
       customerId: input.customerId,
-      metadata: input.metadata,
+      metadata: input.metadata as Record<string, unknown> | undefined,
     })
 
     return prisma.paymentRequest.create({
@@ -27,6 +28,7 @@ export class PaymentRequestService {
         amount: input.amount,
         asset: input.asset,
         paymentUri: providerResponse.paymentUri,
+        provider: fiberProvider.name,
         providerReference: providerResponse.providerReference,
         expiresAt: providerResponse.expiresAt,
         metadata: input.metadata,
@@ -100,6 +102,50 @@ export class PaymentRequestService {
 
       return paidPaymentRequest
     })
+  }
+
+  /** Verify settlement with Fiber (or sim provider), then credit balance if paid. */
+  async verify(developerId: string, id: string) {
+    const paymentRequest = await prisma.paymentRequest.findFirstOrThrow({
+      where: { id, developerId },
+    })
+
+    if (paymentRequest.status === 'paid') {
+      return {
+        paymentRequest,
+        verification: { paid: true, alreadyPaid: true as const },
+      }
+    }
+
+    if (paymentRequest.expiresAt.getTime() < Date.now()) {
+      const expired = await prisma.paymentRequest.update({
+        where: { id },
+        data: { status: 'expired' },
+      })
+      throw new ApiError(
+        'payment_expired',
+        'This payment request has expired. Create a new one.',
+        410,
+        { paymentRequest: expired },
+      )
+    }
+
+    const verification = await fiberProvider.verifyPayment(
+      paymentRequest.providerReference,
+    )
+
+    if (verification.paid) {
+      const paid = await this.markPaid(developerId, id)
+      return {
+        paymentRequest: paid,
+        verification: { paid: true, alreadyPaid: false as const, raw: verification.raw },
+      }
+    }
+
+    return {
+      paymentRequest,
+      verification: { paid: false, alreadyPaid: false as const, raw: verification.raw },
+    }
   }
 }
 

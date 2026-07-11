@@ -74,6 +74,7 @@ function mapPayment(p: any): PaymentRequest {
     amount: num(p.amount),
     status: p.status,
     paymentUri: p.paymentUri,
+    provider: p.provider,
     createdAt: p.createdAt,
   };
 }
@@ -193,6 +194,21 @@ export async function createPaymentRequest(input: {
 
 export async function simulatePaymentPaid(id: string): Promise<void> {
   await apiFetch(`/payment-requests/${id}/simulate-paid`, { method: 'POST' });
+}
+
+export async function verifyPaymentRequest(id: string): Promise<{
+  paymentRequest: unknown;
+  verification: { paid: boolean; alreadyPaid?: boolean };
+}> {
+  return apiFetch(`/payment-requests/${id}/verify`, { method: 'POST' });
+}
+
+export async function getFiberConfig(): Promise<{
+  provider: string;
+  currency: string;
+  rpcUrl: string;
+}> {
+  return apiFetch('/fiber/config');
 }
 
 export async function retryWebhook(id: string): Promise<void> {
