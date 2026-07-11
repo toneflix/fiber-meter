@@ -32,18 +32,38 @@ function formatShannons(amount: bigint): string {
   return `${amount.toString()} shannons`
 }
 
-function isChannelReady(channel: Channel): boolean {
-  return (
-    channel.enabled &&
-    (channel.state?.ChannelReady !== undefined ||
-      Object.keys(channel.state ?? {})[0] === 'ChannelReady')
-  )
+/*
+ * Fiber has shipped two shapes for a channel's `state` over versions:
+ *   - tagged object:  { ChannelReady: {...} }
+ *   - named record:   { state_name: "ChannelReady", state_detail: ... }  (>= 0.9)
+ * Normalize both (plus a bare string) to the state name.
+ */
+function channelStateName(state: unknown): string {
+  if (!state) return ''
+  if (typeof state === 'string') return state
+  const obj = state as Record<string, unknown>
+  if (typeof obj.state_name === 'string') return obj.state_name
+  return Object.keys(obj)[0] ?? ''
 }
 
+function isChannelReady(channel: Channel): boolean {
+  return channel.enabled && channelStateName(channel.state) === 'ChannelReady'
+}
+
+/*
+ * Invoice attribute keys vary in casing across Fiber versions: earlier builds
+ * used PascalCase (`ExpiryTime`, `PayeePublicKey`), current ones snake_case
+ * (`expiry_time`, `payee_public_key`). Match case- and underscore-insensitively
+ * so lookups like getInvoiceAttr('ExpiryTime') resolve either way.
+ */
 function getInvoiceAttr<T>(invoice: CkbInvoice, key: string): T | undefined {
+  const norm = (s: string) => s.toLowerCase().replace(/_/g, '')
+  const want = norm(key)
   for (const attr of invoice.data.attrs) {
-    if (key in attr) {
-      return attr[key] as T
+    for (const attrKey of Object.keys(attr)) {
+      if (norm(attrKey) === want) {
+        return attr[attrKey] as T
+      }
     }
   }
   return undefined
@@ -55,8 +75,10 @@ function check(
   status: PreflightCheck['status'],
   detail: string,
   suggestion?: string,
+  raw?: string,
+  code?: number,
 ): PreflightCheck {
-  return { id, label, status, detail, suggestion }
+  return { id, label, status, detail, suggestion, raw, code }
 }
 
 export async function runPreflight(invoiceStr: string): Promise<PreflightResult> {
@@ -107,6 +129,8 @@ export async function runPreflight(invoiceStr: string): Promise<PreflightResult>
         'fail',
         translated.explanation,
         translated.suggestions[0],
+        translated.raw,
+        translated.code,
       ),
     )
     return {
@@ -152,6 +176,8 @@ export async function runPreflight(invoiceStr: string): Promise<PreflightResult>
         'fail',
         translated.explanation,
         translated.suggestions[0],
+        translated.raw,
+        translated.code,
       ),
     )
     return { ready: false, checks, ranAt: new Date().toISOString() }
@@ -225,7 +251,7 @@ export async function runPreflight(invoiceStr: string): Promise<PreflightResult>
     }
   } catch (err) {
     const msg = err instanceof Error ? err.message : 'list_peers failed'
-    add(check('peers', 'Peers connected', 'warn', msg))
+    add(check('peers', 'Peers connected', 'warn', msg, undefined, msg))
   }
 
   try {
@@ -288,6 +314,7 @@ export async function runPreflight(invoiceStr: string): Promise<PreflightResult>
         'warn',
         msg,
         'Could not verify liquidity automatically.',
+        msg,
       ),
     )
   }
@@ -312,6 +339,8 @@ export async function runPreflight(invoiceStr: string): Promise<PreflightResult>
           'fail',
           translated.explanation,
           translated.suggestions[0],
+          translated.raw,
+          translated.code,
         ),
       )
     } else {
@@ -338,6 +367,8 @@ export async function runPreflight(invoiceStr: string): Promise<PreflightResult>
         'fail',
         translated.explanation,
         translated.suggestions[0],
+        translated.raw,
+        translated.code,
       ),
     )
   }

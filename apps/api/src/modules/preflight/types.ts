@@ -90,6 +90,10 @@ export interface PreflightCheck {
   status: CheckStatus
   detail: string
   suggestion?: string
+  /** Raw error string returned by the Fiber node, when the check failed on an RPC error. */
+  raw?: string
+  /** Fiber RPC error code, when available. */
+  code?: number
 }
 
 export interface PreflightResult {

@@ -14,6 +14,7 @@ import { Badge } from '../components/ui/Badge';
 import { Button } from '../components/ui/Button';
 import { Input } from '../components/ui/Input';
 import { TableSkeletonRows } from '../components/DataStates';
+import { useFiberConfig } from '../lib/useFiberConfig';
 
 function isSimulatedUri(uri: string, provider?: string) {
   return provider === 'simulated' || uri.startsWith('fiber-sim://');
@@ -29,6 +30,7 @@ export function PaymentRequests() {
     verifyPaymentRequest,
     isLoading
   } = useData();
+  const { isLive: fiberLive } = useFiberConfig();
   const [isAdding, setIsAdding] = useState(false);
   const [busyId, setBusyId] = useState<string | null>(null);
   const [newReq, setNewReq] = useState({
@@ -77,13 +79,20 @@ export function PaymentRequests() {
           <h1 className="text-3xl font-bold tracking-tight">
             Payment Requests
           </h1>
+          {fiberLive ?
           <p className="text-zinc-500">
             Fund customer balances with Fiber invoices. For live invoices, run{' '}
             <Link to="/preflight" className="text-blue-600 hover:underline">
               Preflight
             </Link>
             , pay with a Fiber node, then <strong>Verify on Fiber</strong>.
+          </p> :
+
+          <p className="text-zinc-500">
+            Fund customer balances with simulated Fiber payment requests. Create a
+            request, then <strong>Simulate Paid</strong> to credit the balance.
           </p>
+          }
         </div>
         <Button onClick={() => setIsAdding(!isAdding)}>
           {isAdding ? 'Cancel' : 'Create Request'}

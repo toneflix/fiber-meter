@@ -46,8 +46,9 @@ Goal: turn the simulated payment flow into real on-chain Fiber settlement.
 - [x] Reconcile confirmed payments → balance funding in a single transaction
 - [x] Configurable payment expiry, cancellation, and failure handling
   - Expiry checked on verify; cancel_invoice RPC still optional
-- [ ] Testnet end-to-end test: fund a balance with a real Fiber payment
+- [x] Testnet end-to-end test: fund a balance with a real Fiber payment
 - [x] Document the live-vs-simulated boundary in `docs/08-fiber-integration.md`
+- [ ] `HostedFiberProvider` / LSP adapter for nodeless live operation (no self-run node)
 
 ## Phase 2 — Production Hardening & Security
 
@@ -121,8 +122,10 @@ Goal: make FiberMeter trivial to adopt.
 
 Goal: run reliably under load.
 
-- [ ] Production Docker images for api / dashboard / demo-service
-- [ ] Full `docker-compose` stack (Postgres + all apps) for one-command local run
+- [x] Production Docker images for api / dashboard / demo-service
+- [x] Full `docker-compose` stack (Postgres + all apps) for one-command local run
+- [x] `pnpm bootstrap` script (install + Postgres + migrate + seed) as a non-Docker path
+- [x] API auto-migrates + seeds on boot; ships `simulated` by default (zero external deps)
 - [ ] Kubernetes manifests / Helm chart
 - [ ] CI/CD: lint, typecheck, test, migrate, build, deploy
 - [ ] Background job queue (BullMQ) for webhook delivery + aggregation

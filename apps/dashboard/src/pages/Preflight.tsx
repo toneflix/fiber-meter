@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { ShieldCheck } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/Card'
 import { Button } from '../components/ui/Button'
@@ -13,6 +13,8 @@ interface PreflightCheck {
   status: CheckStatus
   detail: string
   suggestion?: string
+  raw?: string
+  code?: number
 }
 
 interface PreflightResult {
@@ -208,6 +210,12 @@ export function Preflight() {
                     <p className="text-sm text-zinc-500 mt-1">{c.detail}</p>
                     {c.suggestion && (
                       <p className="text-sm text-blue-700 mt-2">→ {c.suggestion}</p>
+                    )}
+                    {c.raw && (
+                      <p className="mt-2 rounded bg-zinc-50 border border-zinc-200 px-2 py-1 font-mono text-xs text-zinc-500 break-all">
+                        node: {c.raw}
+                        {typeof c.code === 'number' ? ` (code ${c.code})` : ''}
+                      </p>
                     )}
                   </div>
                 </CardContent>

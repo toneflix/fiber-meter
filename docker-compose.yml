@@ -1,3 +1,12 @@
+# FiberMeter — full local stack.
+#
+#   docker compose up             # everything: db + api + dashboard + demo-service
+#   docker compose up -d postgres # just the database (used by `pnpm bootstrap`)
+#
+# Defaults to the SIMULATED Fiber provider, so the whole flow (payment requests,
+# Simulate Paid, metering, webhooks) works with zero external dependencies —
+# no Fiber node, faucet, or channels required. See docs/08-fiber-integration.md
+# to switch the API to a live Fiber node.
 services:
   postgres:
     image: postgres:16-alpine
@@ -7,5 +16,44 @@ services:
       POSTGRES_DB: fibermeter
     ports: ["5432:5432"]
     volumes: ["fibermeter-pg:/var/lib/postgresql/data"]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U fibermeter -d fibermeter"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  api:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    environment:
+      DATABASE_URL: postgresql://fibermeter:fibermeter@postgres:5432/fibermeter?schema=public
+      JWT_SECRET: dev-secret-change-me
+      PORT: 4000
+      # simulated = zero external deps. Set to `live` + FIBER_RPC_URL for real Fiber.
+      FIBER_PROVIDER: simulated
+      FIBER_CURRENCY: Fibt
+      FIBER_INVOICE_EXPIRY_SECS: 3600
+    ports: ["4000:4000"]
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  dashboard:
+    build:
+      context: .
+      dockerfile: apps/dashboard/Dockerfile
+      args:
+        # Browser runs on the host, so it calls the host-exposed API port.
+        VITE_API_URL: "http://localhost:4000/api"
+    ports: ["5173:5173"]
+    depends_on: [api]
+
+  demo-service:
+    build:
+      context: .
+      dockerfile: apps/demo-service/Dockerfile
+    ports: ["5174:5174"]
+
 volumes:
   fibermeter-pg:
