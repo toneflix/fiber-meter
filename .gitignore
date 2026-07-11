@@ -5,6 +5,7 @@ dist
 coverage
 .vite
 *.tsbuildinfo
+docker-compose.override.yml
 /fiber
 /fiber-*
 /ckb-cli
