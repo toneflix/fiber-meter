@@ -127,10 +127,31 @@ await meter.recordUsage({
 
 FiberMeter signs payloads with HMAC SHA-256 and sends `X-FiberMeter-Event`, `X-FiberMeter-Signature`, and `X-FiberMeter-Timestamp` headers.
 
+## Testing
+
+```bash
+pnpm --filter @fibermeter/api test
+```
+
+Covers pricing calculation, HMAC webhook signatures, and — as integration tests
+against Postgres — balance funding, usage charging, insufficient-balance handling,
+and idempotency. The integration tests run when a migrated database is reachable
+via `DATABASE_URL` (e.g. after `docker compose up -d postgres`) and skip cleanly
+otherwise, so `pnpm test` is safe to run anywhere.
+
 ## Screenshots
 
-- Dashboard overview: `docs/screenshots/dashboard-overview.png` placeholder.
-- AI Summary demo: `docs/screenshots/demo-service.png` placeholder.
+**Dashboard overview** — services, prepaid balances, and recent metered usage:
+
+![FiberMeter dashboard overview](docs/screenshots/dashboard-overview.png)
+
+**AI Summary demo** — a metered service charging a prepaid Fiber balance per usage:
+
+![AI Summary demo service](docs/screenshots/demo-service.png)
+
+More: [services](docs/screenshots/services.png) ·
+[usage events](docs/screenshots/usage-events.png) ·
+[webhooks](docs/screenshots/webhooks.png).
 
 ## Hackathon category fit
 

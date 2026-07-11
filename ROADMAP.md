@@ -30,7 +30,8 @@ SDK, and docs all tell one story.
 - [x] Root README polish: dashboard modes, architecture diagram, roadmap link
 - [x] Demo walkthrough script updated for the live/demo dashboard (`docs/07`)
 - [x] Hackathon submission breakdown updated (`docs/10`)
-- [ ] Capture dashboard + demo screenshots (guide: `docs/screenshots/README.md`)
+- [x] Capture dashboard + demo screenshots (in `docs/screenshots/`)
+- [x] Backend test suite: pricing, webhook signature, balance funding, usage charging, insufficient balance, idempotency
 - [ ] Record the demo walkthrough video (script in `docs/07-demo-walkthrough.md`)
 - [ ] Fill submission links: repo / hosted demo / video (`docs/10`)
 - [x] Run the live stack once (Postgres + seed) to confirm end-to-end in Live mode
