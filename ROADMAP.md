@@ -30,7 +30,8 @@ SDK, and docs all tell one story.
 - [x] Root README polish: dashboard modes, architecture diagram, roadmap link
 - [x] Demo walkthrough script updated for the live/demo dashboard (`docs/07`)
 - [x] Hackathon submission breakdown updated (`docs/10`)
-- [ ] Capture dashboard + demo screenshots (guide: `docs/screenshots/README.md`)
+- [x] Capture dashboard + demo screenshots (in `docs/screenshots/`)
+- [x] Backend test suite: pricing, webhook signature, balance funding, usage charging, insufficient balance, idempotency
 - [ ] Record the demo walkthrough video (script in `docs/07-demo-walkthrough.md`)
 - [ ] Fill submission links: repo / hosted demo / video (`docs/10`)
 - [x] Run the live stack once (Postgres + seed) to confirm end-to-end in Live mode
@@ -39,13 +40,16 @@ SDK, and docs all tell one story.
 
 Goal: turn the simulated payment flow into real on-chain Fiber settlement.
 
-- [ ] Implement `LiveFiberPaymentProvider` against the Fiber Network node/API
-- [ ] Generate real Fiber payment URIs / invoices (replace `fiber-sim://`)
-- [ ] Verify payments via polling **and** inbound Fiber settlement webhooks
-- [ ] Reconcile confirmed payments → balance funding in a single transaction
-- [ ] Configurable payment expiry, cancellation, and failure handling
-- [ ] Testnet end-to-end test: fund a balance with a real Fiber payment
-- [ ] Document the live-vs-simulated boundary in `docs/08-fiber-integration.md`
+- [x] Implement `LiveFiberPaymentProvider` against the Fiber Network node/API
+- [x] Generate real Fiber payment URIs / invoices (replace `fiber-sim://`)
+- [x] Verify payments via polling **and** inbound Fiber settlement webhooks
+  - Note: MVP uses on-demand `get_invoice` verify (dashboard **Verify on Fiber**); inbound Fiber webhooks still planned
+- [x] Reconcile confirmed payments → balance funding in a single transaction
+- [x] Configurable payment expiry, cancellation, and failure handling
+  - Expiry checked on verify; cancel_invoice RPC still optional
+- [x] Testnet end-to-end test: fund a balance with a real Fiber payment
+- [x] Document the live-vs-simulated boundary in `docs/08-fiber-integration.md`
+- [ ] `HostedFiberProvider` / LSP adapter for nodeless live operation (no self-run node)
 
 ## Phase 2 — Production Hardening & Security
 
@@ -119,8 +123,10 @@ Goal: make FiberMeter trivial to adopt.
 
 Goal: run reliably under load.
 
-- [ ] Production Docker images for api / dashboard / demo-service
-- [ ] Full `docker-compose` stack (Postgres + all apps) for one-command local run
+- [x] Production Docker images for api / dashboard / demo-service
+- [x] Full `docker-compose` stack (Postgres + all apps) for one-command local run
+- [x] `pnpm bootstrap` script (install + Postgres + migrate + seed) as a non-Docker path
+- [x] API auto-migrates + seeds on boot; ships `simulated` by default (zero external deps)
 - [ ] Kubernetes manifests / Helm chart
 - [ ] CI/CD: lint, typecheck, test, migrate, build, deploy
 - [ ] Background job queue (BullMQ) for webhook delivery + aggregation

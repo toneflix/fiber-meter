@@ -45,6 +45,7 @@ export type PaymentRequest = {
   amount: number;
   status: 'pending' | 'paid' | 'expired';
   paymentUri: string;
+  provider?: 'simulated' | 'live' | string;
   createdAt: string;
 };
 

@@ -9,10 +9,13 @@ import { z } from 'zod'
 import { prisma } from './db/prisma.js'
 import { requireApiKey, requireJwt } from './middleware/auth.js'
 import { authRouter } from './modules/auth/auth.routes.js'
+import { preflightRouter } from './modules/preflight/preflight.routes.js'
 import { paymentRequestService } from './modules/payment-requests/payment-request.service.js'
 import { usageMeteringService } from './modules/usage-events/usage-metering.service.js'
 import { webhookService } from './modules/webhooks/webhook.service.js'
-import { errorHandler } from './utils/errors.js'
+import { env } from './config/env.js'
+import { fiberProvider } from './providers/fiber/fiber-provider.js'
+import { ApiError, errorHandler } from './utils/errors.js'
 import { validate } from './utils/validation.js'
 
 export const app = express()
@@ -23,10 +26,25 @@ app.use(express.json())
 app.use(morgan('dev'))
 
 app.get('/health', (_req, res) => {
-  res.json({ ok: true, name: 'FiberMeter API' })
+  res.json({
+    ok: true,
+    name: 'FiberMeter API',
+    fiberProvider: fiberProvider.name,
+    fiberCurrency: env.fiberCurrency,
+  })
+})
+
+app.get('/api/fiber/config', (_req, res) => {
+  res.json({
+    provider: fiberProvider.name,
+    currency: env.fiberCurrency,
+    rpcUrl: env.fiberRpcUrl,
+    invoiceExpirySecs: env.fiberInvoiceExpirySecs,
+  })
 })
 
 app.use('/api', authRouter)
+app.use('/api/fiber', preflightRouter)
 
 app.get('/api/services', requireJwt, async (req, res) => {
   const services = await prisma.meteredService.findMany({
@@ -187,9 +205,13 @@ app.get('/api/customers/:customerId/balances/:asset', requireJwt, async (req, re
   res.json(balance)
 })
 
-app.post('/api/payment-requests', requireJwt, async (req, res) => {
-  const paymentRequest = await paymentRequestService.create(req.developerId!, req.body)
-  res.status(201).json(paymentRequest)
+app.post('/api/payment-requests', requireJwt, async (req, res, next) => {
+  try {
+    const paymentRequest = await paymentRequestService.create(req.developerId!, req.body)
+    res.status(201).json(paymentRequest)
+  } catch (err) {
+    next(err)
+  }
 })
 
 app.get('/api/payment-requests', requireJwt, async (req, res) => {
@@ -210,9 +232,32 @@ app.get('/api/payment-requests/:id', requireJwt, async (req, res) => {
   res.json(paymentRequest)
 })
 
-app.post('/api/payment-requests/:id/simulate-paid', requireJwt, async (req, res) => {
-  const paymentRequest = await paymentRequestService.markPaid(req.developerId!, req.params.id)
-  res.json(paymentRequest)
+app.post('/api/payment-requests/:id/verify', requireJwt, async (req, res, next) => {
+  try {
+    const result = await paymentRequestService.verify(req.developerId!, req.params.id)
+    res.json(result)
+  } catch (err) {
+    next(err)
+  }
+})
+
+app.post('/api/payment-requests/:id/simulate-paid', requireJwt, async (req, res, next) => {
+  try {
+    if (fiberProvider.name === 'live') {
+      throw new ApiError(
+        'forbidden',
+        'Simulate paid is disabled when FIBER_PROVIDER=live. Use POST /api/payment-requests/:id/verify after paying the Fiber invoice.',
+        403,
+      )
+    }
+    const paymentRequest = await paymentRequestService.markPaid(
+      req.developerId!,
+      req.params.id,
+    )
+    res.json(paymentRequest)
+  } catch (err) {
+    next(err)
+  }
 })
 
 app.post(

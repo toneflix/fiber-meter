@@ -30,6 +30,7 @@ flowchart LR
 - Developer auth, JWT dashboard APIs, hashed API keys for ingestion.
 - Metered services, pricing rules, customers, balances, payment requests, usage events, ledger entries, and webhook delivery logs.
 - Simulated Fiber payment provider plus live-provider placeholder.
+- **Payment preflight (PayReady)** — `POST /api/fiber/preflight` checks node health, invoice validity, peers, liquidity, and dry-run route before `send_payment`. Dashboard page: **Preflight**.
 - Polished React dashboard (services, pricing rules, customers, balances, payment
   requests, usage events, webhooks, quickstart) that runs against the **live API**
   or a fully **in-browser demo** engine — selectable at login.
@@ -37,63 +38,45 @@ flowchart LR
 - TypeScript SDK with `recordUsage`, `createCustomer`, `createPaymentRequest`, `getBalance`, and webhook verification.
 - Hackathon-ready docs, submission writeup, and phased [ROADMAP](ROADMAP.md).
 
-## Local setup
+## Run it (one command)
 
-### Option A: Docker PostgreSQL
+Everything below runs against the **simulated** Fiber provider by default, so the
+full flow — payment requests, **Simulate Paid**, balance funding, usage metering,
+ledger, webhooks — works with **zero external dependencies**: no Fiber node, no
+faucet, no channels. (Real on-chain Fiber is optional — see
+[docs/08-fiber-integration.md](docs/08-fiber-integration.md).)
+
+### Option A — Docker (recommended)
+
+Brings up Postgres + API + dashboard + demo service. The API auto-migrates and
+seeds demo data on boot.
 
 ```bash
-pnpm install
-docker compose up -d postgres
-cp apps/api/.env.example apps/api/.env
-pnpm --filter @fibermeter/api prisma:generate
-pnpm --filter @fibermeter/api prisma:migrate
-pnpm --filter @fibermeter/api seed
-pnpm dev
+docker compose up
 ```
 
-### Option B: Local PostgreSQL without Docker
+- Dashboard → http://localhost:5173
+- Demo app → http://localhost:5174
+- API → http://localhost:4000
 
-Use this path if Docker is unavailable or you already run PostgreSQL locally.
+(First run builds the images — a few minutes.)
 
-1. Install PostgreSQL 15+ using your OS package manager or a native installer.
-2. Start PostgreSQL locally. Examples:
+### Option B — Script (needs pnpm; Docker only for Postgres)
 
-   ```bash
-   # macOS Homebrew
-   brew services start postgresql@16
+```bash
+pnpm bootstrap   # install deps, start Postgres, migrate + seed
+pnpm dev         # run dashboard (5173) + demo app (5174) + API (4000)
+```
 
-   # Ubuntu/Debian system service
-   sudo service postgresql start
-   ```
+`pnpm bootstrap` uses an existing PostgreSQL on `:5432` if present, otherwise
+starts one with `docker compose up -d postgres`.
 
-3. Create the FiberMeter role and database:
+### Zero-install preview
 
-   ```bash
-   createuser fibermeter --pwprompt
-   createdb fibermeter --owner fibermeter
-   ```
+The dashboard's **demo mode** runs the whole billing engine in the browser — no
+backend at all. Open http://localhost:5173 and click **Explore in demo mode**.
 
-   Use `fibermeter` as the password to match the default examples, or choose your own password and update `DATABASE_URL`.
-
-4. Configure the API environment:
-
-   ```bash
-   cp apps/api/.env.example apps/api/.env
-   # Edit DATABASE_URL if your local username, password, host, port, or database differs.
-   # Default: postgresql://postgres:postgres@localhost:5432/fibermeter?schema=public
-   ```
-
-5. Generate Prisma client, run migrations, seed demo data, and start the apps:
-
-   ```bash
-   pnpm install
-   pnpm --filter @fibermeter/api prisma:generate
-   pnpm --filter @fibermeter/api prisma:migrate
-   pnpm --filter @fibermeter/api seed
-   pnpm dev
-   ```
-
-Demo login: `demo@fibermeter.dev` / `password123`.
+Dashboard login (live mode): `demo@fibermeter.dev` / `password123`.
 
 ## Dashboard (Live + Demo modes)
 
@@ -144,10 +127,31 @@ await meter.recordUsage({
 
 FiberMeter signs payloads with HMAC SHA-256 and sends `X-FiberMeter-Event`, `X-FiberMeter-Signature`, and `X-FiberMeter-Timestamp` headers.
 
+## Testing
+
+```bash
+pnpm --filter @fibermeter/api test
+```
+
+Covers pricing calculation, HMAC webhook signatures, and — as integration tests
+against Postgres — balance funding, usage charging, insufficient-balance handling,
+and idempotency. The integration tests run when a migrated database is reachable
+via `DATABASE_URL` (e.g. after `docker compose up -d postgres`) and skip cleanly
+otherwise, so `pnpm test` is safe to run anywhere.
+
 ## Screenshots
 
-- Dashboard overview: `docs/screenshots/dashboard-overview.png` placeholder.
-- AI Summary demo: `docs/screenshots/demo-service.png` placeholder.
+**Dashboard overview** — services, prepaid balances, and recent metered usage:
+
+![FiberMeter dashboard overview](docs/screenshots/dashboard-overview.png)
+
+**AI Summary demo** — a metered service charging a prepaid Fiber balance per usage:
+
+![AI Summary demo service](docs/screenshots/demo-service.png)
+
+More: [services](docs/screenshots/services.png) ·
+[usage events](docs/screenshots/usage-events.png) ·
+[webhooks](docs/screenshots/webhooks.png).
 
 ## Hackathon category fit
 

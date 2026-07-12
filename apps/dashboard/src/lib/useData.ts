@@ -93,6 +93,9 @@ export function useData() {
         notify('Payment request created', async () => store.createPaymentRequest(input)),
       simulatePaymentPaid: (id: string) =>
         notify('Payment marked as paid', async () => store.simulatePaymentPaid(id)),
+      verifyPaymentRequest: async (_id: string) => {
+        toast.error('Verify on Fiber is only available in Live mode');
+      },
       retryWebhook: async (_id: string) => {
         /* Demo webhooks are always delivered — nothing to retry. */
       },
@@ -159,6 +162,21 @@ export function useData() {
       notify('Payment marked as paid', async () => {
         await live.simulatePaymentPaid(id);
         await invalidate('payments', 'customers', 'webhooks');
+      }),
+    verifyPaymentRequest: (id: string) =>
+      notify(null, async () => {
+        const result = await live.verifyPaymentRequest(id);
+        if (result.verification.paid) {
+          toast.success(
+            result.verification.alreadyPaid
+              ? 'Already paid'
+              : 'Fiber payment confirmed — balance funded',
+          );
+        } else {
+          toast.error('Not paid yet on Fiber — pay the invoice, then verify again');
+        }
+        await invalidate('payments', 'customers', 'webhooks');
+        return result;
       }),
     retryWebhook: (id: string) =>
       notify('Webhook retried', async () => {

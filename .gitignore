@@ -4,3 +4,9 @@ dist
 .DS_Store
 coverage
 .vite
+*.tsbuildinfo
+docker-compose.override.yml
+/fiber
+/fiber-*
+/ckb-cli
+/ckb

@@ -8,6 +8,7 @@ import {
   Terminal,
   Settings,
   LogOut,
+  ShieldCheck,
   Zap } from
 'lucide-react';
 import { cn } from '../lib/utils';
@@ -16,6 +17,7 @@ import { Button } from '../components/ui/Button';
 import { LiveErrorBanner } from '../components/DataStates';
 import { useAuth } from '../lib/auth';
 import { useData } from '../lib/useData';
+import { useFiberConfig } from '../lib/useFiberConfig';
 const navItems = [
 {
   name: 'Overview',
@@ -38,6 +40,11 @@ const navItems = [
   icon: CreditCard
 },
 {
+  name: 'Preflight',
+  href: '/preflight',
+  icon: ShieldCheck
+},
+{
   name: 'Usage Events',
   href: '/usage',
   icon: Activity
@@ -58,6 +65,12 @@ export function DashboardLayout() {
   const navigate = useNavigate();
   const { demoMode, developer, logout } = useAuth();
   const { isLive, isLoading, error } = useData();
+  const { isLive: fiberLive } = useFiberConfig();
+
+  /* Preflight is a live-Fiber-only tool; hide it in simulated mode. */
+  const visibleNavItems = navItems.filter(
+    (item) => item.href !== '/preflight' || fiberLive,
+  );
 
   const handleLogout = () => {
     logout();
@@ -75,7 +88,7 @@ export function DashboardLayout() {
         </div>
         <div className="flex-1 overflow-auto py-2">
           <nav className="grid items-start px-4 text-sm font-medium">
-            {navItems.map((item) => {
+            {visibleNavItems.map((item) => {
               const Icon = item.icon;
               const isActive =
               location.pathname === item.href ||
