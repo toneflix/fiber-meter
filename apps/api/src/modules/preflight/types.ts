@@ -41,6 +41,8 @@ export interface Channel {
   remote_balance: string | number
   enabled: boolean
   funding_udt_type_script?: unknown
+  /** On-chain funding outpoint. Object `{ tx_hash, index }` or a hex string. */
+  channel_outpoint?: { tx_hash?: string; index?: string } | string
 }
 
 export interface InvoiceAttribute {

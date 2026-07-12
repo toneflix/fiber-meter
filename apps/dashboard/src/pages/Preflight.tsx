@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
-import { ShieldCheck } from 'lucide-react'
+import { ExternalLink, ShieldCheck } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/Card'
 import { Button } from '../components/ui/Button'
 import { Badge } from '../components/ui/Badge'
@@ -35,6 +35,21 @@ type HealthState =
   | { status: 'ok'; peers: number; channels: number; version: string }
   | { status: 'error'; message: string }
 
+interface ProofChannel {
+  channelId: string
+  state: string
+  enabled: boolean
+  localBalance: string
+  remoteBalance: string
+  fundingTxHash?: string
+  explorerUrl?: string
+}
+
+type ProofState =
+  | { status: 'loading' }
+  | { status: 'ok'; channels: ProofChannel[]; nodeId: string }
+  | { status: 'error'; message: string }
+
 function statusBadge(status: CheckStatus) {
   if (status === 'pass') return <Badge variant="success">OK</Badge>
   if (status === 'warn') return <Badge variant="secondary">WARN</Badge>
@@ -48,6 +63,22 @@ export function Preflight() {
   const [result, setResult] = useState<PreflightResult | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [health, setHealth] = useState<HealthState>({ status: 'loading' })
+  const [proof, setProof] = useState<ProofState>({ status: 'loading' })
+
+  const loadProof = useCallback(async () => {
+    setProof({ status: 'loading' })
+    try {
+      const res = await fetch(`${API_BASE}/fiber/live-proof`)
+      const data = await res.json()
+      if (!res.ok || !data.live) {
+        setProof({ status: 'error', message: data.error ?? 'No live channels' })
+        return
+      }
+      setProof({ status: 'ok', channels: data.channels ?? [], nodeId: data.node?.nodeId ?? '' })
+    } catch {
+      setProof({ status: 'error', message: 'Could not reach FiberMeter API' })
+    }
+  }, [])
 
   const loadHealth = useCallback(async () => {
     setHealth({ status: 'loading' })
@@ -74,12 +105,13 @@ export function Preflight() {
 
   useEffect(() => {
     void loadHealth()
+    void loadProof()
     const pending = sessionStorage.getItem('fibermeter_preflight_invoice')
     if (pending) {
       setInvoice(pending)
       sessionStorage.removeItem('fibermeter_preflight_invoice')
     }
-  }, [loadHealth])
+  }, [loadHealth, loadProof])
 
   async function runPreflight() {
     setLoading(true)
@@ -142,6 +174,61 @@ export function Preflight() {
           {health.status === 'error' && (
             <p className="text-sm text-red-600">{health.message}</p>
           )}
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <div>
+            <CardTitle className="text-sm font-medium">On-chain settlement proof</CardTitle>
+            <p className="text-xs text-zinc-500 mt-1">
+              Fiber payments are off-chain, but the channel they settle through is a real
+              CKB testnet transaction. Verify it independently on the explorer.
+            </p>
+          </div>
+          <Button variant="outline" size="sm" onClick={() => void loadProof()}>
+            Refresh
+          </Button>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          {proof.status === 'loading' && <p className="text-sm text-zinc-500">Loading channels…</p>}
+          {proof.status === 'error' && (
+            <p className="text-sm text-zinc-500">{proof.message}</p>
+          )}
+          {proof.status === 'ok' && proof.channels.length === 0 && (
+            <p className="text-sm text-zinc-500">No open channels yet.</p>
+          )}
+          {proof.status === 'ok' &&
+            proof.channels.map((ch) => (
+              <div
+                key={ch.channelId}
+                className="rounded-md border border-zinc-200 px-3 py-2 text-sm"
+              >
+                <div className="flex items-center justify-between gap-2">
+                  <Badge variant={ch.state === 'ChannelReady' ? 'success' : 'secondary'}>
+                    {ch.state || 'unknown'}
+                  </Badge>
+                  <span className="text-xs text-zinc-500">
+                    local {ch.localBalance} · remote {ch.remoteBalance}
+                  </span>
+                </div>
+                {ch.explorerUrl ? (
+                  <a
+                    href={ch.explorerUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="mt-2 inline-flex items-center gap-1 font-mono text-xs text-blue-700 hover:underline break-all"
+                  >
+                    <ExternalLink className="h-3 w-3 shrink-0" />
+                    {ch.fundingTxHash}
+                  </a>
+                ) : (
+                  <p className="mt-2 font-mono text-xs text-zinc-400 break-all">
+                    funding tx pending confirmation
+                  </p>
+                )}
+              </div>
+            ))}
         </CardContent>
       </Card>
 
