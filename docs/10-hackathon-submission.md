@@ -101,7 +101,7 @@ TBD — _fill in before submission._
 
 ## Links
 
-- GitHub repository: TBD
+- GitHub repository: https://github.com/toneflix/fiber-meter
 - Hosted demo (simulated, zero-setup): TBD
 - Hosted **live** demo (real testnet settlement + explorer proof): TBD — see [11-live-hosted-demo.md](11-live-hosted-demo.md)
 - Sample on-chain channel funding tx (CKB testnet explorer): TBD

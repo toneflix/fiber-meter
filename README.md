@@ -29,7 +29,8 @@ flowchart LR
 - Express + TypeScript API with Prisma/PostgreSQL schema.
 - Developer auth, JWT dashboard APIs, hashed API keys for ingestion.
 - Metered services, pricing rules, customers, balances, payment requests, usage events, ledger entries, and webhook delivery logs.
-- Simulated Fiber payment provider plus live-provider placeholder.
+- Simulated Fiber provider by default, plus a live provider that creates real
+  invoices and verifies Fiber settlement through node RPC.
 - **Payment preflight (PayReady)** — `POST /api/fiber/preflight` checks node health, invoice validity, peers, liquidity, and dry-run route before `send_payment`. Dashboard page: **Preflight**.
 - Polished React dashboard (services, pricing rules, customers, balances, payment
   requests, usage events, webhooks, quickstart) that runs against the **live API**

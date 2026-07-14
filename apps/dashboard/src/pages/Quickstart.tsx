@@ -10,7 +10,7 @@ import { Badge } from '../components/ui/Badge';
 import { Button } from '../components/ui/Button';
 import { Check, Copy, Terminal, Webhook, Key, Plus } from 'lucide-react';
 import { useData } from '../lib/useData';
-import { useAuth } from '../lib/auth';
+import { useAuth } from '../lib/auth-context';
 import { API_BASE } from '../lib/api';
 
 /*

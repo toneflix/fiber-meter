@@ -7,25 +7,12 @@
  *  - Demo:  no backend required — the whole billing engine runs in-browser via the
  *           zustand store, so judges can explore the full flow offline.
  */
-import React, { createContext, useCallback, useContext, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { apiFetch, apiKeyStore, tokenStore } from './api';
-
-type Developer = { id: string; email: string; name: string };
-
-type AuthState = {
-  token: string | null;
-  developer: Developer | null;
-  demoMode: boolean;
-  isAuthenticated: boolean;
-  login: (email: string, password: string) => Promise<void>;
-  enterDemoMode: () => void;
-  logout: () => void;
-};
+import { AuthContext, type AuthState, type Developer } from './auth-context';
 
 const DEV_KEY = 'fibermeter_developer';
 const DEMO_KEY = 'fibermeter_demo_mode';
-
-const AuthContext = createContext<AuthState | null>(null);
 
 function readDeveloper(): Developer | null {
   try {
@@ -86,12 +73,4 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
-}
-
-export function useAuth(): AuthState {
-  const ctx = useContext(AuthContext);
-  if (!ctx) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
-  return ctx;
 }

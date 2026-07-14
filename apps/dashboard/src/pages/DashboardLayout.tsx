@@ -15,7 +15,7 @@ import { cn } from '../lib/utils';
 import { Badge } from '../components/ui/Badge';
 import { Button } from '../components/ui/Button';
 import { LiveErrorBanner } from '../components/DataStates';
-import { useAuth } from '../lib/auth';
+import { useAuth } from '../lib/auth-context';
 import { useData } from '../lib/useData';
 import { useFiberConfig } from '../lib/useFiberConfig';
 const navItems = [

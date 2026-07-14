@@ -14,12 +14,13 @@ metering, payment tracking, ledgering, and signed webhooks.
 - **Demo Service** — an AI Summary API that meters usage through FiberMeter.
 - **SDK** — TypeScript SDK; **Docker** PostgreSQL setup.
 
-## What is simulated
+## Payment modes
 
-The MVP uses `SimulatedFiberPaymentProvider`, generating `fiber-sim://pay?...`
-URIs and a `/simulate-paid` endpoint. `LiveFiberPaymentProvider` is a clean
-placeholder for wallet/node RPC settlement verification (see
-`docs/08-fiber-integration.md`).
+The zero-setup walkthrough uses `SimulatedFiberPaymentProvider`, generating
+`fiber-sim://` URIs and exposing **Simulate Paid**. The hosted live walkthrough
+uses `LiveFiberPaymentProvider` to create real `fibt1...` invoices; an independent
+payer node settles them, and FiberMeter credits the balance only after Fiber RPC
+confirms payment. See [08-fiber-integration.md](08-fiber-integration.md).
 
 ## Two ways to demo
 

@@ -2,15 +2,10 @@
 
 FiberMeter is reusable Fiber Network infrastructure for prepaid balances, service metering, payment tracking, ledgering, and signed webhooks.
 
-## What is working
+The TypeScript SDK records usage, creates customers and payment requests, reads
+balances, and verifies webhook signatures. Client integration is provider
+agnostic: the FiberMeter API selects simulated or live settlement through
+`FIBER_PROVIDER`.
 
-- Express API, Prisma schema, seed data, simulated Fiber payment requests, usage charging, insufficient-balance responses, ledger entries, and webhook delivery records.
-- React dashboard shell, AI Summary demo shell, TypeScript SDK, Docker PostgreSQL setup.
-
-## What is simulated
-
-The MVP uses `SimulatedFiberPaymentProvider`, generating `fiber-sim://pay?...` URIs and a `/simulate-paid` endpoint. The `LiveFiberPaymentProvider` is a clean placeholder for wallet/node RPC settlement verification.
-
-## Production hardening
-
-Add live Fiber verification, queue-backed webhook retries, row-level balance locking strategy review, rate limits, audit logs, secrets management, and hosted deployments.
+The package currently ships from this workspace and has not yet been published
+to npm; publishing and additional language SDKs are tracked in the roadmap.

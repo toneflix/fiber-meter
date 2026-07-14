@@ -1,0 +1,67 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: fibermeter
+          POSTGRES_PASSWORD: fibermeter
+          POSTGRES_DB: fibermeter
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U fibermeter -d fibermeter"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 20
+
+    env:
+      DATABASE_URL: postgresql://fibermeter:fibermeter@localhost:5432/fibermeter?schema=public
+      JWT_SECRET: ci-only-secret
+      FIBER_PROVIDER: simulated
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9.12.0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Generate Prisma client
+        run: pnpm --filter @fibermeter/api prisma:generate
+
+      - name: Apply database migrations
+        run: pnpm --filter @fibermeter/api exec prisma migrate deploy
+
+      - name: Lint, build, and test
+        run: pnpm check
+
+      - name: Validate Compose files
+        run: |
+          docker compose config --quiet
+          docker compose -f docker-compose.yml -f docker-compose.live.yml config --quiet

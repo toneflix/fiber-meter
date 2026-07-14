@@ -7,8 +7,8 @@
  * the active source is selected afterwards based on auth mode.
  */
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { useAuth } from './auth';
-import { toast } from './toast';
+import { useAuth } from './auth-context';
+import { toast } from './toast-store';
 import * as live from './live';
 import { useStore } from '../store';
 import type {
@@ -93,14 +93,21 @@ export function useData() {
         notify('Payment request created', async () => store.createPaymentRequest(input)),
       simulatePaymentPaid: (id: string) =>
         notify('Payment marked as paid', async () => store.simulatePaymentPaid(id)),
-      verifyPaymentRequest: async (_id: string) => {
+      verifyPaymentRequest: async (id: string) => {
+        void id;
         toast.error('Verify on Fiber is only available in Live mode');
       },
-      retryWebhook: async (_id: string) => {
+      retryWebhook: async (id: string) => {
+        void id;
         /* Demo webhooks are always delivered — nothing to retry. */
       },
-      createApiKey: (_name: string): Promise<ApiKey> =>
-        notify('API key created', async () => ({ ...DEMO_API_KEYS[0], key: DEMO_API_KEY_RAW })),
+      createApiKey: (name: string): Promise<ApiKey> => {
+        void name;
+        return notify('API key created', async () => ({
+          ...DEMO_API_KEYS[0],
+          key: DEMO_API_KEY_RAW,
+        }));
+      },
       recordUsage: async (input: RecordUsageInput): Promise<RecordUsageResult> =>
         store.recordUsage(input) as RecordUsageResult,
     };

@@ -7,7 +7,9 @@
         "bootstrap": "node scripts/bootstrap.mjs",
         "autopay": "node scripts/autopay.mjs",
         "build": "pnpm -r build",
+        "lint": "pnpm --filter @fibermeter/dashboard lint",
         "test": "pnpm -r test",
+        "check": "pnpm lint && pnpm build && pnpm test",
         "dev": "pnpm --parallel dev",
         "run:node:payer": "FIBER_SECRET_KEY_PASSWORD='password' RUST_LOG=info ./fiber-payer/fnn -c ./fiber-payer/config.yml -d ./fiber-payer",
         "run:node:payee": "FIBER_SECRET_KEY_PASSWORD='password' RUST_LOG=info ./fiber-payee/fnn -c ./fiber-payee/config.yml -d ./fiber-payee"

@@ -1,17 +1,22 @@
-# finish.md — End-to-end real Fiber (not simulated)
+# Live Fiber deployment checklist
 
-Complete checklist to finish **FiberMeter + PayReady preflight** as a **live Fiber Network** product.  
-Nothing here assumes `fiber-sim://` or **Simulate Paid** as the happy path.
+Operator checklist for deploying **FiberMeter + PayReady preflight** against live
+Fiber Network testnet infrastructure. Nothing here assumes `fiber-sim://` or
+**Simulate Paid** as the happy path.
 
-Work on branch: `payready`  
+The live provider and hosted-demo code are merged into `main`. This document is
+for bringing up a fresh live environment; it is not an implementation backlog.
+
+Work from branch: `main`
 Repo root: `fiber-meter/`
 
 ---
 
 ## What to do next (start here)
 
-Phase **C is done in code** (live `new_invoice` + `verify` via `get_invoice`, dashboard **Verify on Fiber**).  
-What remains is **running a real node and proving one live payment**.
+Phase **C is done in code** (live `new_invoice` + `verify` via `get_invoice`,
+dashboard **Verify on Fiber**). For each new deployment, run the infrastructure
+below and prove one live payment before publishing its URL.
 
 ### 1. Finish local FiberMeter (Phase A) — today
 

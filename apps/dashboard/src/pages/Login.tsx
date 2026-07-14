@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Zap, ArrowRight, PlayCircle } from 'lucide-react';
-import { useAuth } from '../lib/auth';
+import { useAuth } from '../lib/auth-context';
 import { Button } from '../components/ui/Button';
 import { Input } from '../components/ui/Input';
 

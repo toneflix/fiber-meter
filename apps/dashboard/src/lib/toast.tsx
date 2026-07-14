@@ -3,38 +3,9 @@
  * fired from anywhere (including the data layer) without prop drilling or a
  * context. Render <Toaster /> once near the app root.
  */
-import { create } from 'zustand';
 import { CheckCircle2, XCircle, X } from 'lucide-react';
 import { cn } from './utils';
-
-type ToastKind = 'success' | 'error';
-type Toast = { id: number; kind: ToastKind; message: string };
-
-interface ToastState {
-  toasts: Toast[];
-  push: (toast: Omit<Toast, 'id'>) => void;
-  dismiss: (id: number) => void;
-}
-
-let counter = 0;
-
-const useToastStore = create<ToastState>((set) => ({
-  toasts: [],
-  push: (toast) => {
-    const id = ++counter;
-    set((state) => ({ toasts: [...state.toasts, { ...toast, id }] }));
-    setTimeout(
-      () => set((state) => ({ toasts: state.toasts.filter((t) => t.id !== id) })),
-      3500,
-    );
-  },
-  dismiss: (id) => set((state) => ({ toasts: state.toasts.filter((t) => t.id !== id) })),
-}));
-
-export const toast = {
-  success: (message: string) => useToastStore.getState().push({ kind: 'success', message }),
-  error: (message: string) => useToastStore.getState().push({ kind: 'error', message }),
-};
+import { useToastStore } from './toast-store';
 
 export function Toaster() {
   const toasts = useToastStore((s) => s.toasts);
