@@ -1,6 +1,6 @@
 import { Router } from 'express'
 
-import { getFiberRpcUrl, listChannels, nodeInfo } from './rpc.js'
+import { getPreflightFiberRpcUrl, listChannels, nodeInfo } from './rpc.js'
 import { channelStateName, runPreflight } from './preflight.js'
 import { translateFiberError } from './errors.js'
 import type { Channel } from './types.js'
@@ -24,7 +24,7 @@ function fundingTxHash(outpoint: Channel['channel_outpoint']): string | undefine
 }
 
 preflightRouter.get('/health', async (_req, res) => {
-  const rpcUrl = getFiberRpcUrl()
+  const rpcUrl = getPreflightFiberRpcUrl()
   try {
     const info = await nodeInfo()
     res.json({
@@ -76,7 +76,7 @@ preflightRouter.post('/preflight', async (req, res) => {
  * node is running a real, funded channel on testnet.
  */
 preflightRouter.get('/live-proof', async (_req, res) => {
-  const rpcUrl = getFiberRpcUrl()
+  const rpcUrl = getPreflightFiberRpcUrl()
   try {
     const [info, { channels }] = await Promise.all([nodeInfo(), listChannels(false)])
     const proof = channels.map((channel) => {

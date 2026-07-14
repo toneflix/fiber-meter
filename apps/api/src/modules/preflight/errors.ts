@@ -17,7 +17,7 @@ const PATTERNS: ErrorPattern[] = [
       'FiberMeter could not talk to your Fiber node. The RPC endpoint may be down or the URL is wrong.',
     suggestions: [
       'Start your Fiber node and confirm the RPC port (default 8227).',
-      'Set FIBER_RPC_URL in apps/api/.env to the correct endpoint.',
+      'Set FIBER_PREFLIGHT_RPC_URL to the payer node endpoint (or FIBER_RPC_URL for a single-node setup).',
       'For testnet, try the public node at http://18.163.221.211:8227.',
     ],
   },

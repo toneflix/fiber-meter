@@ -8,6 +8,15 @@ export function getFiberRpcUrl(): string {
   return process.env.FIBER_RPC_URL ?? 'http://127.0.0.1:8227'
 }
 
+/**
+ * The node that evaluates whether an invoice can be paid. In a hosted demo
+ * this is the payer node, while FIBER_RPC_URL remains the payee node used to
+ * create and verify invoices.
+ */
+export function getPreflightFiberRpcUrl(): string {
+  return process.env.FIBER_PREFLIGHT_RPC_URL ?? getFiberRpcUrl()
+}
+
 export class FiberRpcClientError extends Error {
   constructor(
     message: string,
@@ -21,8 +30,8 @@ export class FiberRpcClientError extends Error {
 export async function fiberRpc<T>(
   method: string,
   params: Record<string, unknown> = {},
+  url = getFiberRpcUrl(),
 ): Promise<T> {
-  const url = getFiberRpcUrl()
   const body = {
     jsonrpc: '2.0',
     id: requestId++,
@@ -73,30 +82,35 @@ export async function fiberRpc<T>(
 }
 
 export async function nodeInfo() {
-  return fiberRpc<import('./types.js').NodeInfo>('node_info', {})
+  return fiberRpc<import('./types.js').NodeInfo>('node_info', {}, getPreflightFiberRpcUrl())
 }
 
 export async function listPeers() {
-  return fiberRpc<import('./types.js').ListPeersResult>('list_peers', {})
+  return fiberRpc<import('./types.js').ListPeersResult>('list_peers', {}, getPreflightFiberRpcUrl())
 }
 
 export async function listChannels(includeClosed = false) {
-  return fiberRpc<import('./types.js').ListChannelsResult>('list_channels', {
-    include_closed: includeClosed,
-  })
+  return fiberRpc<import('./types.js').ListChannelsResult>(
+    'list_channels',
+    { include_closed: includeClosed },
+    getPreflightFiberRpcUrl(),
+  )
 }
 
 export async function parseInvoice(invoice: string) {
-  return fiberRpc<import('./types.js').ParseInvoiceResult>('parse_invoice', {
-    invoice,
-  })
+  return fiberRpc<import('./types.js').ParseInvoiceResult>(
+    'parse_invoice',
+    { invoice },
+    getPreflightFiberRpcUrl(),
+  )
 }
 
 export async function sendPaymentDryRun(invoice: string) {
-  return fiberRpc<import('./types.js').SendPaymentResult>('send_payment', {
-    invoice,
-    dry_run: true,
-  })
+  return fiberRpc<import('./types.js').SendPaymentResult>(
+    'send_payment',
+    { invoice, dry_run: true },
+    getPreflightFiberRpcUrl(),
+  )
 }
 
 export interface NewInvoiceResult {

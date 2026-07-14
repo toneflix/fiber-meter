@@ -48,6 +48,7 @@ Create the service account and runtime directories:
 sudo useradd --system --create-home --home-dir /var/lib/fibermeter --shell /usr/sbin/nologin fibermeter
 sudo mkdir -p "$APP_ROOT" /etc/fibermeter /var/lib/fibermeter/{payee,payer} /var/cache/fibermeter
 sudo chown -R fibermeter:fibermeter /var/lib/fibermeter
+sudo chown root:fibermeter /etc/fibermeter
 sudo chmod 750 /etc/fibermeter
 ```
 
@@ -79,7 +80,10 @@ sudo chmod 640 /etc/fibermeter/*.env
 ```
 
 For a native reverse-proxy deployment, keep `HOST=127.0.0.1`. Set
-`CORS_ORIGINS` to the comma-separated dashboard/demo origins.
+`CORS_ORIGINS` to the comma-separated dashboard/demo origins. In the hosted
+two-node demo, keep `FIBER_RPC_URL` pointed at the payee (`8237`) for invoice
+creation and verification, and point `FIBER_PREFLIGHT_RPC_URL` at the payer
+(`8247`) for route and liquidity checks.
 
 Load the environment, deploy migrations, and seed the configured demo account:
 

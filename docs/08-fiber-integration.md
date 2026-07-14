@@ -30,6 +30,8 @@ There are three ways to operate against Fiber:
 ```env
 FIBER_PROVIDER=live
 FIBER_RPC_URL=http://127.0.0.1:8227
+# Optional: use a separate payer node for preflight and dry-run checks
+FIBER_PREFLIGHT_RPC_URL=http://127.0.0.1:8247
 FIBER_CURRENCY=Fibt
 FIBER_INVOICE_EXPIRY_SECS=3600
 ```
@@ -40,7 +42,8 @@ FIBER_INVOICE_EXPIRY_SECS=3600
 2. API calls Fiber `new_invoice` (amount in shannons hex, currency `Fibt` on testnet).
 3. Dashboard opens **Fund via Fiber** with the encoded invoice (`fibt1…`), QR,
    and payer-node instructions.
-4. Optional: **Preflight** runs PayReady checks against `FIBER_RPC_URL`.
+4. Optional: **Preflight** runs PayReady checks against
+   `FIBER_PREFLIGHT_RPC_URL` (falling back to `FIBER_RPC_URL`).
 5. A payer node / wallet calls Fiber `send_payment` with that invoice.
 6. The funding dialog periodically calls the verification endpoint. It uses
    `get_invoice` by `payment_hash`; when status is `Paid`, FiberMeter credits the
@@ -67,9 +70,10 @@ In the live funding flow FiberMeter is the **payee** — the API issues the invo
 on **its own** node (`FIBER_RPC_URL`). The **customer** is the **payer** and settles
 it from **their own** node/wallet. These must be **different** nodes:
 
-- **Preflight** ("can I pay this invoice?") is a **payer-side** tool. Running it
-  against FiberMeter's own node for FiberMeter's own invoice asks that node to pay
-  itself → the node rejects it with `allow_self_payment is not enabled`.
+- **Preflight** ("can I pay this invoice?") is a **payer-side** tool. Set
+  `FIBER_PREFLIGHT_RPC_URL` to that payer node. If it is omitted, preflight falls
+  back to `FIBER_RPC_URL`; running it against FiberMeter's payee node for that
+  node's own invoice asks the node to pay itself and correctly fails.
 - To demo a real payment you therefore need **two** nodes (or a wallet): the
   merchant/payee node behind the API, and a separate customer/payer node that runs
   `send_payment`. A single node cannot pay its own invoice without a circular route.

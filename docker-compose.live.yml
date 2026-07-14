@@ -17,6 +17,7 @@ services:
     environment:
       FIBER_PROVIDER: live
       FIBER_RPC_URL: http://host.docker.internal:8237
+      FIBER_PREFLIGHT_RPC_URL: http://host.docker.internal:8247
       FIBER_CURRENCY: Fibt
       CKB_EXPLORER_URL: https://testnet.explorer.nervos.org
       FIBER_DEMO_AUTOPAY: "true"

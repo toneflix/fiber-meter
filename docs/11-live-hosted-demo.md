@@ -141,9 +141,9 @@ curl -s -X POST http://127.0.0.1:8247 -H 'Content-Type: application/json' \
 docker compose -f docker-compose.yml -f docker-compose.live.yml up -d
 ```
 
-This runs postgres + **API in live mode** (→ payee `:8237`) + dashboard +
-demo-service + **autopay** (→ payer `:8247`). The API auto-migrates and seeds on
-boot.
+This runs postgres + **API in live mode** (invoice creation/verification →
+payee `:8237`, preflight → payer `:8247`) + dashboard + demo-service +
+**autopay** (→ payer `:8247`). The API auto-migrates and seeds on boot.
 
 ---
 
