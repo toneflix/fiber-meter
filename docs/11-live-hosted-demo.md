@@ -1,39 +1,39 @@
-# Hosted live demo — real testnet settlement, zero judge setup
+# Hosted live demo — real testnet settlement, zero auditor setup
 
-This is the **standout** path: a persistent demo where a judge clicks **Fund via
+This is the externally verifiable path: a persistent demo where an auditor clicks **Fund via
 Fiber** and watches a **real Fiber testnet invoice settle end-to-end**, then
 verifies the underlying channel on a public block explorer — with nobody at a
 terminal.
 
 It complements (does not replace) the turnkey **simulated** path
-(`docker compose up`), which judges can still run themselves from scratch.
+(`docker compose up`), which auditors can still run themselves from scratch.
 
 ---
 
-## What judges can independently verify
+## What auditors can independently verify
 
 A Fiber payment is **off-chain** — an HTLC update inside a payment channel. It
 does not appear on any block explorer, by design. What *is* on-chain and
 publicly verifiable is the **channel funding transaction**. So the honest,
 checkable proof we surface is:
 
-1. The dashboard **Preflight** page shows the node's open channel(s) with a
+1. The dashboard **Overview** shows the node's open channel(s) with a
    **CKB testnet explorer link** to each channel's on-chain funding tx
    (`GET /api/fiber/live-proof`).
 2. Clicking **Fund via Fiber** issues a real `fibt1…` invoice; the balance is
    credited **only after** the API's `/verify` confirms Fiber settled it.
 
-Judges verify: *"this is a real, funded channel on CKB testnet, and the balance
+Auditors verify: *"this is a real, funded channel on CKB testnet, and the balance
 moved only after real settlement."*
 
 ---
 
-## Why this can't be fully hands-off from a judge's laptop
+## Why this can't be fully hands-off from an auditor's laptop
 
 Going live needs two funded testnet nodes + an open channel. Funding comes from
 the CKB faucet (external, rate-limited) and a channel open needs on-chain
 confirmation — no `docker compose up` can conjure faucet CKB. So **we** do that
-one-time bootstrap ahead of time and keep it running; judges just click.
+one-time bootstrap ahead of time and keep it running; auditors use the hosted flow.
 
 ---
 
@@ -147,14 +147,15 @@ payee `:8237`, preflight → payer `:8247`) + dashboard + demo-service +
 
 ---
 
-## The judge experience
+## The auditor experience
 
 1. Open the dashboard, log in (`demo@fibermeter.dev` / `password123`).
-2. **Preflight** page → **On-chain settlement proof** shows the channel with a
+2. **Overview** → **Live Fiber channel proof** shows the channel with a
    CKB testnet explorer link. Click it — real funding tx on testnet. ✅
 3. Create a **Payment Request** for a customer → a real `fibt1…` invoice.
 4. Within a few seconds **autopay** settles it from the payer node; the request
-   flips to **Paid**, the balance is credited, a `balance.funded` webhook fires.
+   flips to **Paid**, the balance is credited, a `balance.funded` webhook fires,
+   and the confirmation keeps the CKB Explorer proof link visible.
 5. Run the demo service / record usage → the live-funded balance is charged.
 
 No terminal, no manual `send_payment`.
@@ -185,5 +186,5 @@ same request twice.
   existing reverse proxy + TLS.
 - If the droplet restarts, restart the two nodes; channel state persists and
   funds are safe (the live demo is briefly unavailable until they're back).
-- Put the hosted URL + a sample channel explorer link in
-  [10-hackathon-submission.md](10-hackathon-submission.md).
+- Put the hosted URL and a sample channel explorer link in
+  [10-auditor-guide.md](10-auditor-guide.md).

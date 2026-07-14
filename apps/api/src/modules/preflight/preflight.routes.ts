@@ -72,7 +72,7 @@ preflightRouter.post('/preflight', async (req, res) => {
  * Public, read-only "proof of live settlement" surface. A Fiber payment is
  * off-chain and not itself on any explorer — but the CHANNEL it settled through
  * is an on-chain CKB transaction. This returns each channel's funding tx with a
- * CKB testnet explorer link so anyone (judges) can independently verify the
+ * CKB testnet explorer link so auditors can independently verify the
  * node is running a real, funded channel on testnet.
  */
 preflightRouter.get('/live-proof', async (_req, res) => {

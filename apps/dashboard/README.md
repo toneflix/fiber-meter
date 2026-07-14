@@ -15,7 +15,7 @@ The dashboard runs against either data source, selectable at the login screen:
   reads/writes the real Express + PostgreSQL backend via TanStack Query.
 - **Demo** — a fully in-browser billing engine (zustand). No backend required,
   so the entire metering → charge → fund → webhook flow is explorable offline.
-  Ideal for the hackathon walkthrough.
+  Ideal for a self-contained product walkthrough.
 
 A badge in the header always shows which mode is active.
 

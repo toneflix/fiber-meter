@@ -1,7 +1,7 @@
 /*
  * Reports the API's Fiber provider mode ('simulated' | 'live').
  *
- * Live-only surfaces (Preflight, Verify-on-Fiber) are hidden unless the API
+ * Live-only surfaces (channel proof and Verify-on-Fiber) are hidden unless the API
  * explicitly reports `live`. If the API is unreachable (e.g. pure demo mode) or
  * hasn't answered yet, we default to 'simulated' so those surfaces stay hidden.
  */

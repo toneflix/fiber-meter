@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useData } from '../lib/useData';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/Card';
 import {
@@ -113,10 +113,8 @@ export function PaymentRequests() {
           {fiberLive ?
           <p className="text-zinc-500">
             {demoAutopay
-              ? 'Create a real testnet invoice; the separate demo payer settles it automatically. '
-              : 'Create a real invoice and settle it from a separate Fiber node. '}
-            <Link to="/preflight" className="text-blue-600 hover:underline">Preflight</Link>{' '}
-            remains available for route diagnostics.
+              ? 'Create a real testnet invoice.'
+              : 'Create a real invoice and settle it from a separate Fiber node.'}
           </p> :
 
           <p className="text-zinc-500">

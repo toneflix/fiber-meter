@@ -5,7 +5,7 @@
  *  - Live:  authenticate a developer against the real API (JWT persisted to
  *           localStorage); every page reads/writes the Express + Postgres backend.
  *  - Demo:  no backend required — the whole billing engine runs in-browser via the
- *           zustand store, so judges can explore the full flow offline.
+ *           zustand store, so auditors can explore the full flow offline.
  */
 import React, { useCallback, useMemo, useState } from 'react';
 import { apiFetch, apiKeyStore, tokenStore } from './api';

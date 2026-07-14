@@ -2,16 +2,16 @@
 
 **FiberMeter — usage-based billing and prepaid service-metering infrastructure for Fiber Network.**
 
-This roadmap takes FiberMeter from a hackathon-ready MVP to production-grade,
+This roadmap takes FiberMeter from a validated MVP to production-grade,
 reusable billing infrastructure. Phases are ordered by dependency and value:
-**Phase 0** is what wins the hackathon; **Phases 1–8** are the path to a product
-developers can build real businesses on.
+**Phase 0** establishes the product baseline; **Phases 1–8** are the path to a
+service developers can build real businesses on.
 
 Legend: `[ ]` planned · `[x]` done. Check items off as they land.
 
 ---
 
-## Phase 0 — MVP Completion & Dashboard Integration _(hackathon-ready)_
+## Phase 0 — MVP Completion & Dashboard Integration
 
 Goal: a polished, honest, end-to-end demo. The dashboard, API, demo service,
 SDK, and docs all tell one story.
@@ -29,11 +29,11 @@ SDK, and docs all tell one story.
 - [x] Verify the seed matches the dashboard/demo contracts (dev, service, rule, customer, balance)
 - [x] Root README polish: dashboard modes, architecture diagram, roadmap link
 - [x] Demo walkthrough script updated for the live/demo dashboard (`docs/07`)
-- [x] Hackathon submission breakdown updated (`docs/10`)
+- [x] Auditor review guide updated (`docs/10`)
 - [x] Capture dashboard + demo screenshots (in `docs/screenshots/`)
 - [x] Backend test suite: pricing, webhook signature, balance funding, usage charging, insufficient balance, idempotency
 - [ ] Record the demo walkthrough video (script in `docs/07-demo-walkthrough.md`)
-- [ ] Fill submission links: repo / hosted demo / video (`docs/10`)
+- [ ] Fill deployment links: repository / hosted demo / walkthrough (`docs/10`)
 - [x] Run the live stack once (Postgres + seed) to confirm end-to-end in Live mode
 
 ## Phase 1 — Live Fiber Integration
@@ -149,12 +149,12 @@ Goal: something a business can safely depend on and adopt.
 
 ---
 
-### How this maps to the hackathon
+### How the phases map to product maturity
 
-- **Phase 0** is the demo judges see — reusable infra, honest about simulated vs
-  live, end-to-end working flow.
+- **Phase 0** is the auditor-visible baseline — reusable infrastructure, a clear
+  simulated-vs-live boundary, and an end-to-end working flow.
 - **Phase 1** is the single most credible "next step": swap the simulated
   provider for real Fiber settlement behind the existing `FiberPaymentProvider`
   interface — no rewrites required.
-- **Phases 2–8** show judges FiberMeter is designed as durable infrastructure,
+- **Phases 2–8** develop FiberMeter into durable infrastructure,
   not a one-off app.

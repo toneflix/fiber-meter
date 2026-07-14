@@ -1,10 +1,10 @@
-You are acting as a senior full-stack engineer, product architect, and hackathon execution partner.
+You are acting as a senior full-stack engineer, product architect, and implementation partner.
 
 We are building **FiberMeter**, an open-source service-metering and prepaid billing infrastructure layer for **Fiber Network**.
 
-The goal is to create a polished MVP for the **Gone in 60ms: Fiber Network Infrastructure Hackathon**.
+The goal is to create a polished MVP for **Fiber Network infrastructure**.
 
-The hackathon is focused on **Fiber infrastructure**, not consumer products. FiberMeter should fit the category:
+The project is focused on **Fiber infrastructure**, not consumer products. FiberMeter fits the area:
 
 **Merchant, Liquidity, LSP, and Multi-Asset Infrastructure**
 
@@ -43,7 +43,7 @@ Build a working MVP that demonstrates this flow:
 8. The dashboard shows services, customers, usage, balances, payments, and webhook delivery status.
 9. A demo app shows a fake metered service, such as an AI Summary API, charging users based on usage.
 
-## Important Hackathon Positioning
+## Important Product Positioning
 
 This must be presented as reusable infrastructure, not a normal app.
 
@@ -470,7 +470,7 @@ GET /api/payment-requests/:id
 POST /api/payment-requests/:id/simulate-paid
 ```
 
-The simulated payment endpoint is important for the hackathon demo.
+The simulated payment endpoint is important for offline evaluation and local development.
 
 When a payment is marked as paid:
 
@@ -791,7 +791,7 @@ Use:
 - toast notifications
 - responsive layout
 
-The UI should look good enough for a hackathon demo video.
+The UI should be polished enough for a professional product walkthrough.
 
 ## Demo Service Requirements
 
@@ -879,7 +879,7 @@ docs/
   07-demo-walkthrough.md
   08-fiber-integration.md
   09-roadmap.md
-  10-hackathon-submission.md
+  10-auditor-guide.md
 ```
 
 Docs must explain:
@@ -898,7 +898,7 @@ Docs must explain:
 
 ## README Requirements
 
-The root README should be polished and hackathon-ready.
+The root README should be polished and deployment-ready.
 
 Include:
 
@@ -913,7 +913,7 @@ Include:
 - SDK examples
 - webhook examples
 - screenshots placeholders
-- hackathon category fit
+- infrastructure positioning
 - judging criteria alignment
 - roadmap
 - license
@@ -1062,7 +1062,7 @@ The project must be:
 - not a clone of Fiber402
 - not only a consumer-facing payment app
 
-## Hackathon Submission Deliverables
+## Auditor Review Deliverables
 
 Prepare the project so we can submit:
 
@@ -1080,7 +1080,7 @@ Prepare the project so we can submit:
 Add these to:
 
 ```txt
-docs/10-hackathon-submission.md
+docs/10-auditor-guide.md
 ```
 
 ## Demo Script
@@ -1146,8 +1146,8 @@ By the end, the repo should contain a working MVP of FiberMeter:
 - usage billing flow
 - balance deduction
 - webhook delivery
-- hackathon submission writeup
+- auditor review guide
 
-The final product should be polished enough that judges immediately understand:
+The final product should be polished enough that auditors immediately understand:
 
 FiberMeter is reusable Fiber infrastructure for service metering, prepaid balances, API billing, micropayments, and developer monetisation.

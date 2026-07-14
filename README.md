@@ -31,15 +31,19 @@ flowchart LR
 - Metered services, pricing rules, customers, balances, payment requests, usage events, ledger entries, and webhook delivery logs.
 - Simulated Fiber provider by default, plus a live provider that creates real
   invoices and verifies Fiber settlement through node RPC.
-- **Payment preflight (PayReady)** — `POST /api/fiber/preflight` checks node health, invoice validity, peers, liquidity, and dry-run route before `send_payment`. Dashboard page: **Preflight**.
-- Judge-ready live funding dialog with an invoice QR, bounded testnet demo payer,
-  automatic settlement detection, and a manual node fallback.
+- **Payment diagnostics (PayReady)** — `POST /api/fiber/preflight` and the
+  payment dialog's optional **Preflight Diagnostics** action let operators check
+  node health, invoice validity, peers, liquidity, and dry-run routes without
+  adding a step to the primary payment flow.
+- Auditor-friendly live funding dialog with an invoice QR, bounded testnet demo payer,
+  automatic settlement detection, a manual node fallback, and a CKB Explorer
+  link proving the channel-funding transaction after payment.
 - Polished React dashboard (services, pricing rules, customers, balances, payment
   requests, usage events, webhooks, quickstart) that runs against the **live API**
   or a fully **in-browser demo** engine — selectable at login.
 - AI Summary demo app that meters usage through FiberMeter end-to-end.
 - TypeScript SDK with `recordUsage`, `createCustomer`, `createPaymentRequest`, `getBalance`, and webhook verification.
-- Hackathon-ready docs, submission writeup, and phased [ROADMAP](ROADMAP.md).
+- Deployment guides, an auditor review guide, and a phased [ROADMAP](ROADMAP.md).
 
 ## Run it (one command)
 
@@ -159,14 +163,17 @@ More: [services](docs/screenshots/services.png) ·
 Live demo operation: [zero-setup auto-payer](docs/11-live-hosted-demo.md) ·
 [native Ubuntu/TinyCP deployment](deploy/native/README.md).
 
-## Hackathon category fit
+## Infrastructure positioning
 
-Category: **Merchant, Liquidity, LSP, and Multi-Asset Infrastructure**. FiberMeter is not a consumer checkout app; it is reusable billing and metering infrastructure for merchants, services, wallets, and developers building on Fiber.
+FiberMeter belongs in the **merchant, liquidity, LSP, and multi-asset
+infrastructure** layer. It is not a consumer checkout app; it is reusable billing
+and metering infrastructure for merchants, services, wallets, and developers
+building on Fiber.
 
 ## Roadmap
 
-See [ROADMAP.md](ROADMAP.md) for the full phased plan — from the hackathon MVP
-(Phase 0) through live Fiber settlement, production hardening, multi-tenancy/RBAC,
+See [ROADMAP.md](ROADMAP.md) for the full phased plan — from the current MVP
+through live Fiber settlement, production hardening, multi-tenancy/RBAC,
 subscriptions and tiered pricing, real-time analytics, an SDK ecosystem, scale,
 and go-to-market.
 

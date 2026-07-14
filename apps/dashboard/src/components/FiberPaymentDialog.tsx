@@ -14,6 +14,7 @@ import {
 import { QRCodeSVG } from 'qrcode.react';
 
 import type { PaymentRequest } from '../lib/types';
+import { API_BASE } from '../lib/api';
 import { toast } from '../lib/toast-store';
 import { cn } from '../lib/utils';
 import { Button } from './ui/Button';
@@ -35,6 +36,7 @@ type FiberPaymentDialogProps = {
 
 type Tab = 'invoice' | 'node' | 'setup';
 type PollState = 'watching' | 'checking' | 'paid' | 'retrying';
+type FundingProof = { explorerUrl: string; fundingTxHash?: string };
 
 async function copyText(value: string, label: string) {
   try {
@@ -57,6 +59,7 @@ export function FiberPaymentDialog({
   const [tab, setTab] = useState<Tab>('invoice');
   const [pollState, setPollState] = useState<PollState>('watching');
   const [checkingNow, setCheckingNow] = useState(false);
+  const [fundingProof, setFundingProof] = useState<FundingProof | null>(null);
   const verifyRef = useRef(onVerify);
   const requestId = request?.id;
   const requestStatus = request?.status;
@@ -95,7 +98,37 @@ export function FiberPaymentDialog({
     if (!requestId) return;
     setTab('invoice');
     setPollState(requestStatus === 'paid' ? 'paid' : 'watching');
+    setFundingProof(null);
   }, [requestId, requestStatus]);
+
+  useEffect(() => {
+    if (!requestId || (requestStatus !== 'paid' && pollState !== 'paid')) return;
+
+    let cancelled = false;
+    const loadFundingProof = async () => {
+      try {
+        const response = await fetch(`${API_BASE}/fiber/live-proof`);
+        const data = await response.json();
+        const channel = data?.channels?.find(
+          (candidate: { state?: string; explorerUrl?: string }) =>
+            candidate.state === 'ChannelReady' && candidate.explorerUrl,
+        );
+        if (!cancelled && response.ok && channel?.explorerUrl) {
+          setFundingProof({
+            explorerUrl: channel.explorerUrl,
+            fundingTxHash: channel.fundingTxHash,
+          });
+        }
+      } catch {
+        // Settlement remains valid if the optional public explorer proof is unavailable.
+      }
+    };
+
+    void loadFundingProof();
+    return () => {
+      cancelled = true;
+    };
+  }, [pollState, requestId, requestStatus]);
 
   useEffect(() => {
     if (!requestId || requestStatus !== 'pending') return;
@@ -177,7 +210,7 @@ export function FiberPaymentDialog({
               </h2>
               <p className="text-sm text-zinc-500">
                 {demoAutopay
-                  ? `Judge-triggered testnet payment${customerName ? ` for ${customerName}` : ''}`
+                  ? `Auditor-triggered testnet payment${customerName ? ` for ${customerName}` : ''}`
                   : customerName
                     ? `Funding ${customerName}`
                     : 'Live Fiber payment request'}
@@ -202,6 +235,23 @@ export function FiberPaymentDialog({
             <p className="mx-auto mt-3 max-w-md text-xs text-zinc-400">
               This confirmation stays open until you choose Done or close the dialog.
             </p>
+            {fundingProof && (
+              <div className="mx-auto mt-5 max-w-md rounded-lg border border-blue-200 bg-blue-50 px-4 py-3">
+                <a
+                  href={fundingProof.explorerUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center gap-1 text-sm font-medium text-blue-700 hover:underline"
+                >
+                  <ExternalLink className="h-4 w-4" />
+                  View channel funding transaction
+                </a>
+                <p className="mt-1 text-xs text-blue-700/80">
+                  Fiber payments are off-chain; this CKB testnet transaction independently
+                  proves the funded channel used for settlement.
+                </p>
+              </div>
+            )}
             <Button className="mt-7" onClick={onClose}>Done</Button>
           </div>
         ) : expired ? (
@@ -289,7 +339,7 @@ export function FiberPaymentDialog({
                         <Copy className="mr-2 h-4 w-4" /> Copy invoice
                       </Button>
                       <Button variant="outline" onClick={() => onPreflight(request.paymentUri)}>
-                        Run preflight
+                        Preflight Diagnostics
                       </Button>
                     </div>
                   </div>
@@ -306,7 +356,7 @@ export function FiberPaymentDialog({
                       </p>
                       <p className="mt-1 text-sm text-green-800">
                         {demoAutopay
-                          ? 'The hosted demo payer normally handles settlement. This command is only a fallback for judges who want to pay from another funded testnet node.'
+                          ? 'The hosted demo payer normally handles settlement. This command is only a fallback for auditors who want to pay from another funded testnet node.'
                           : 'FiberMeter never connects to your payer RPC and never receives its keys. Run this command on the machine hosting your funded payer node.'}
                       </p>
                     </div>

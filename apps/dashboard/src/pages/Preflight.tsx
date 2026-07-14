@@ -147,7 +147,7 @@ export function Preflight() {
       <div>
         <h1 className="text-3xl font-bold tracking-tight flex items-center gap-2">
           <ShieldCheck className="h-8 w-8 text-blue-600" />
-          Payment Preflight
+          Preflight Diagnostics
         </h1>
         <p className="text-zinc-500 mt-1">
           Can this Fiber invoice be paid? Run PayReady-style checks before top-up
@@ -248,7 +248,7 @@ export function Preflight() {
             onClick={() => void runPreflight()}
             disabled={loading || !invoice.trim()}
           >
-            {loading ? 'Running checks…' : 'Run preflight'}
+            {loading ? 'Running diagnostics…' : 'Preflight Diagnostics'}
           </Button>
         </CardContent>
       </Card>

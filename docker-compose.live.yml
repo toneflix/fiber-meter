@@ -4,7 +4,7 @@
 #
 # Runs the SAME db + API + dashboard + demo-service stack, but flips the API to
 # the LIVE Fiber provider and starts a separate, bounded testnet auto-payer so
-# judges can trigger real settlement without installing a wallet or node.
+# auditors can trigger real settlement without installing a wallet or node.
 #
 # It expects separate payee (:8237) and payer (:8247) nodes on the host. Native
 # nodes stay there so keys and channel state can be backed up; only the app tier

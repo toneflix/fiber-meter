@@ -11,9 +11,9 @@ FiberMeter is reusable Fiber Network infrastructure for prepaid balances, servic
 
 **`simulated` is the default and requires no Fiber node, faucet, or channels.**
 The entire product (payment requests, Simulate Paid, balance funding, metering,
-ledger, webhooks) works end-to-end in this mode — it's the path judges/evaluators
-should use. Live-only surfaces (the **Preflight** page and **Fund via Fiber**) are
-hidden by the dashboard when the API reports `simulated`.
+ledger, webhooks) works end-to-end in this mode — it's the path auditors
+should use. Live-only surfaces (**Fund via Fiber** and channel proof) are hidden
+by the dashboard when the API reports `simulated`.
 
 There are three ways to operate against Fiber:
 
@@ -42,12 +42,13 @@ FIBER_INVOICE_EXPIRY_SECS=3600
 2. API calls Fiber `new_invoice` (amount in shannons hex, currency `Fibt` on testnet).
 3. Dashboard opens **Fund via Fiber** with the encoded invoice (`fibt1…`), QR,
    and payer-node instructions.
-4. Optional: **Preflight** runs PayReady checks against
-   `FIBER_PREFLIGHT_RPC_URL` (falling back to `FIBER_RPC_URL`).
-5. A payer node / wallet calls Fiber `send_payment` with that invoice.
-6. The funding dialog periodically calls the verification endpoint. It uses
+4. A payer node / wallet calls Fiber `send_payment` with that invoice.
+5. The funding dialog periodically calls the verification endpoint. It uses
    `get_invoice` by `payment_hash`; when status is `Paid`, FiberMeter credits the
    prepaid balance and emits `balance.funded`.
+6. The confirmation dialog links to the channel's on-chain CKB funding
+   transaction. Operators can still open **Preflight Diagnostics** from the
+   payment dialog or call `POST /api/fiber/preflight` directly.
 
 ## RPC methods used
 
@@ -70,7 +71,7 @@ In the live funding flow FiberMeter is the **payee** — the API issues the invo
 on **its own** node (`FIBER_RPC_URL`). The **customer** is the **payer** and settles
 it from **their own** node/wallet. These must be **different** nodes:
 
-- **Preflight** ("can I pay this invoice?") is a **payer-side** tool. Set
+- The optional preflight API ("can I pay this invoice?") is a **payer-side** tool. Set
   `FIBER_PREFLIGHT_RPC_URL` to that payer node. If it is omitted, preflight falls
   back to `FIBER_RPC_URL`; running it against FiberMeter's payee node for that
   node's own invoice asks the node to pay itself and correctly fails.
@@ -85,7 +86,7 @@ outbound liquidity (`send_payment`) — FiberMeter's own node does not pay itsel
 
 For the **hands-off hosted live demo**, `scripts/autopay.mjs` (npm: `pnpm autopay`)
 plays the customer: it watches the API for live pending payment requests and
-settles each from a second (payer) node, so a judge can click "Fund via Fiber"
+settles each from a second (payer) node, so an auditor can click "Fund via Fiber"
 and watch real settlement with nobody at a terminal. Full droplet runbook:
 [11-live-hosted-demo.md](11-live-hosted-demo.md). None of this is needed in the
 default `simulated` mode. The dashboard renders the real invoice and watches
@@ -97,5 +98,5 @@ fallback.
 A Fiber payment is off-chain and not on any explorer, but the **channel** it
 settles through is a real on-chain CKB transaction. `GET /api/fiber/live-proof`
 returns each open channel's funding tx with a CKB testnet explorer link, surfaced
-on the dashboard **Preflight** page so anyone can independently verify the node
-runs a real, funded testnet channel.
+on the dashboard **Overview** and in the successful payment dialog so anyone can
+independently verify the node runs a real, funded testnet channel.

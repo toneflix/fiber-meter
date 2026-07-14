@@ -59,17 +59,18 @@ below and prove one live payment before publishing its URL.
 - [ ] Demo Service (or curl usage) → charge succeeds against the new balance
 - [ ] Usage Events + Webhooks show the charge
 
-### 6. Hackathon wrap (Phase H) — after one live success
+### 6. Auditor review wrap (Phase H) — after one live success
 
 - [ ] Update demo walkthrough video to use Verify (not Simulate Paid)
 - [ ] Screenshots: Preflight pass, `fibt1…` request, paid balance, usage
-- [ ] Fill `docs/10-hackathon-submission.md` links (repo / demo / video)
+- [ ] Fill `docs/10-auditor-guide.md` links (repository / demo / walkthrough)
 - [ ] Commit + push `payready` branch / open PR
 
 ### Blocked until step 2 works
 
 You **cannot** finish live E2E without a reachable Fiber node.  
-Until then you can still demo billing with `FIBER_PROVIDER=simulated` (Simulate Paid) — but that is **not** the submission story you want.
+Until then you can still demonstrate billing with `FIBER_PROVIDER=simulated`
+(Simulate Paid), but that does not prove hosted live settlement.
 
 ### Optional stretch (after E works)
 
@@ -255,7 +256,7 @@ If any step uses Simulate Paid, it is **not** finished for live Fiber.
 
 ---
 
-## Phase G — SDK + docs (reuse story for judges)
+## Phase G — SDK + docs (reuse story for auditors)
 
 - [ ] Add SDK methods (or document HTTP):
   - [ ] `preflightInvoice(invoice)`
@@ -268,7 +269,7 @@ If any step uses Simulate Paid, it is **not** finished for live Fiber.
   - [ ] RPC methods used
   - [ ] How verify works
 - [ ] Update `docs/07-demo-walkthrough.md` — **remove Simulate Paid as primary**; use live pay + verify
-- [ ] Update `docs/10-hackathon-submission.md` with honest live demo steps
+- [ ] Update `docs/10-auditor-guide.md` with accurate live demo steps
 - [ ] Update root README: “Live Fiber top-up + PayReady preflight”
 - [ ] Mark Phase 1 items in `ROADMAP.md` as done when complete
 
@@ -297,7 +298,7 @@ If any step uses Simulate Paid, it is **not** finished for live Fiber.
 - [ ] Secure secrets; do **not** expose Fiber RPC publicly without auth
 - [ ] Hosted demo may still use a private Fiber node you control, or document “bring your own `FIBER_RPC_URL`”
 
-### H4. Submission pack
+### H4. Auditor review pack
 
 - [ ] Public GitHub repo (this branch merged or PR linked)
 - [ ] Category: Merchant / Liquidity / LSP / Multi-Asset (+ mention payment UX / preflight)
@@ -308,7 +309,7 @@ If any step uses Simulate Paid, it is **not** finished for live Fiber.
 
 ## Phase I — Explicitly out of scope for “finished live MVP”
 
-Do **not** block the live demo on these (post-hackathon / ROADMAP Phase 2+):
+Do **not** block the live demo on these future ROADMAP Phase 2+ items:
 
 - Multi-org RBAC, OAuth SSO
 - Queue-backed webhook retries / DLQ

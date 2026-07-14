@@ -22,7 +22,7 @@ export const env = {
   /** Fiber invoice currency: Fibt (testnet) or Fibb (mainnet) */
   fiberCurrency: process.env.FIBER_CURRENCY ?? 'Fibt',
   fiberInvoiceExpirySecs: Number(process.env.FIBER_INVOICE_EXPIRY_SECS ?? 3600),
-  /** Judge-only hosted demo: a separate controlled node pays pending invoices. */
+  /** Audit-only hosted demo: a separate controlled node pays pending invoices. */
   fiberDemoAutopay: process.env.FIBER_DEMO_AUTOPAY === 'true',
   fiberDemoMaxPaymentCkb: Number(process.env.FIBER_DEMO_MAX_PAYMENT_CKB ?? 5),
 }

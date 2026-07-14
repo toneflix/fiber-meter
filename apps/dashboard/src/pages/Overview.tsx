@@ -11,6 +11,8 @@ import {
 '../components/ui/Table';
 import { Badge } from '../components/ui/Badge';
 import { Skeleton } from '../components/ui/Skeleton';
+import { FiberLiveProof } from '../components/FiberLiveProof';
+import { useFiberConfig } from '../lib/useFiberConfig';
 import type { ReactNode } from 'react';
 export function Overview() {
   const { services, customers, balances, usageEvents, paymentRequests, isLoading } =
@@ -18,6 +20,7 @@ export function Overview() {
   const totalFunded = balances.reduce((acc, b) => acc + b.totalFunded, 0);
   const totalSpent = balances.reduce((acc, b) => acc + b.totalSpent, 0);
   const totalUsageEvents = usageEvents.length;
+  const { isLive: fiberLive } = useFiberConfig();
   const stat = (value: ReactNode) =>
   isLoading ?
   <Skeleton className="h-7 w-24" /> :
@@ -77,6 +80,8 @@ export function Overview() {
           </CardContent>
         </Card>
       </div>
+
+      {fiberLive && <FiberLiveProof />}
 
       <div className="grid gap-4 md:grid-cols-2">
         <Card>

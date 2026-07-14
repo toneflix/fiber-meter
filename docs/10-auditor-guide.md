@@ -1,4 +1,4 @@
-# FiberMeter — Hackathon Submission
+# FiberMeter — Auditor Review Guide
 
 **Usage-based billing and prepaid service-metering infrastructure for Fiber Network.**
 
@@ -13,13 +13,13 @@ tools, webhook products, subscriptions, and pay-as-you-go services on top of Fib
 Think **Stripe Billing + usage metering + prepaid wallet credits, but Fiber-native
 and open-source.**
 
-## Category
+## Infrastructure scope
 
 Merchant, Liquidity, LSP, and Multi-Asset Infrastructure. FiberMeter is reusable
 infrastructure for merchants, services, wallets, and developers — not a
 consumer-facing payment app.
 
-## Run it (for judges) — one command, zero external deps
+## Run it locally — one command, zero external dependencies
 
 ```bash
 docker compose up          # Postgres + API + dashboard + demo service
@@ -31,7 +31,7 @@ docker compose up          # Postgres + API + dashboard + demo service
 Defaults to the **simulated** Fiber provider, so the entire flow works with no
 Fiber node, faucet, or channels. (Script alternative: `pnpm bootstrap && pnpm dev`.)
 
-**Want real testnet settlement?** The optional **hosted live demo** lets a judge
+**Want real testnet settlement?** The optional **hosted live demo** lets an auditor
 click *Fund via Fiber* and watch a real `fibt1…` invoice settle end-to-end — an
 auto-payer plays the customer, and the dashboard links the on-chain channel
 funding tx on the CKB testnet explorer for independent verification. Setup:
@@ -58,17 +58,17 @@ usage then succeeds.
 - **Real Fiber, proven:** `LiveFiberPaymentProvider` issues real `fibt…` testnet
   invoices via a Fiber node and verifies settlement with `get_invoice`. We completed
   a real end-to-end testnet payment (node→node, invoice **Paid**, balances shifted),
-  plus a **Preflight** tool that checks node health, invoice validity, peers,
-  liquidity, and route before paying.
-- **Live demo, judge-triggerable:** an optional hosted setup
+  plus a PayReady-compatible diagnostics API that checks node health, invoice
+  validity, peers, liquidity, and route when operators need it.
+- **Auditor-triggered live flow:** an optional hosted setup
   ([11-live-hosted-demo.md](11-live-hosted-demo.md)) adds an **auto-payer** so a
-  judge clicks *Fund via Fiber* and watches a real testnet invoice settle with no
+  auditor clicks *Fund via Fiber* and watches a real testnet invoice settle with no
   terminal. The dashboard exposes each channel's **on-chain funding tx with a CKB
   testnet explorer link** (`GET /api/fiber/live-proof`) — the balance is credited
   only after Fiber confirms settlement, and anyone can verify the channel is real.
-- **Judge-ready payment UX:** the live dashboard renders the real invoice QR and
+- **Audit-ready payment UX:** the live dashboard renders the real invoice QR and
   watches settlement automatically while a separate, payment-capped testnet node
-  acts as the demo customer. No judge wallet, faucet, or terminal is required.
+  acts as the demo customer. No auditor wallet, faucet, or terminal is required.
 - **Needs production hardening:** rate limiting, API-key scopes/rotation, secrets
   management, inbound Fiber settlement webhooks, and a hosted-node/LSP adapter for
   nodeless operation. Tracked in [ROADMAP.md](../ROADMAP.md).
@@ -90,7 +90,7 @@ tracking, and webhook notifications. FiberMeter turns Fiber payments into reusab
 billing infrastructure so developers can monetize APIs, AI tools, and microservices
 on Fiber without building the money plumbing themselves.
 
-## Alignment with judging
+## Verification checklist
 
 - **Infrastructure, not an app:** reusable billing/metering primitives + an SDK.
 - **Works out of the box:** one command, seeded, zero external dependencies.
@@ -98,22 +98,19 @@ on Fiber without building the money plumbing themselves.
 - **Quality:** typed end-to-end, decimal-safe money, idempotent ingestion,
   transactional balance updates, automated tests, and a phased roadmap.
 
-## Team members
-
-TBD — _fill in before submission._
-
-## Links
+## Deployment links
 
 - GitHub repository: https://github.com/toneflix/fiber-meter
-- Hosted demo (simulated, zero-setup): TBD
-- Hosted **live** demo (real testnet settlement + explorer proof): TBD — see [11-live-hosted-demo.md](11-live-hosted-demo.md)
-- Sample on-chain channel funding tx (CKB testnet explorer): TBD
-- Video demo: TBD
+- Hosted dashboard: configure for the target deployment
+- Hosted **live** demo (real testnet settlement + explorer proof): see
+  [11-live-hosted-demo.md](11-live-hosted-demo.md)
+- Channel funding proof: exposed by `GET /api/fiber/live-proof` and linked from
+  the dashboard Overview and successful payment dialog
 
 ## AI tooling note
 
 AI tooling was used as an execution accelerator for scaffolding, integration, and
-documentation. The architecture, code, and submission are open-source and
+documentation. The architecture, code, and review materials are open-source and
 developer-focused.
 
 ## Future roadmap
