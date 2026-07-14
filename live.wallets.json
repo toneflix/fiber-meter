@@ -1,0 +1,16 @@
+{
+  "payee": {
+    "address": {
+      "mainnet": "ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsqtqda5py64grx39ncl9l2p44644hhcq09qrrsxk4",
+      "testnet": "ckt1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsqtqda5py64grx39ncl9l2p44644hhcq09qd3mfud"
+    },
+    "lock_arg": "0x606f68126aa819a259e3e5fa835aeab5bdf00794"
+  },
+  "payer": {
+    "address": {
+      "mainnet": "ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsqgn2q5lz42q6f0npzdxald7c036z6pydjgy9gv0y",
+      "testnet": "ckt1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsqgn2q5lz42q6f0npzdxald7c036z6pydjg2hrr9u"
+    },
+    "lock_arg": "0x135029f15540d25f3089a6efdbec3e3a168246c9"
+  }
+}
