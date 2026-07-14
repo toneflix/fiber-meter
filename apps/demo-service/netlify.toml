@@ -1,10 +1,18 @@
 [build]
-  command = "pnpm --filter @fibermeter/demo-service build"
+  command = "pnpm --filter @fibermeter/sdk build && pnpm --filter @fibermeter/demo-service build"
   publish = "apps/demo-service/dist"
 
 [build.environment]
   NODE_VERSION = "20"
   PNPM_VERSION = "9.12.0"
+
+[functions]
+  directory = "apps/demo-service/netlify/functions"
+
+[[redirects]]
+  from = "/api/summarize"
+  to = "/.netlify/functions/summarize"
+  status = 200
 
 [[redirects]]
   from = "/*"

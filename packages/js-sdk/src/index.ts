@@ -6,10 +6,36 @@ export type FiberMeterOptions = {
   baseUrl: string
 }
 
+export type UsageRecordResult = {
+  status: 'charged' | 'insufficient_balance'
+  usageEventId: string
+  amount?: string
+  asset: string
+  balanceRemaining?: string
+  quantity?: number
+  required?: string
+  available?: string
+  paymentRequired?: boolean
+  idempotent?: boolean
+}
+
+export class FiberMeterError extends Error {
+  constructor(
+    message: string,
+    readonly status: number,
+    readonly body: unknown,
+  ) {
+    super(message)
+    this.name = 'FiberMeterError'
+  }
+}
+
 export class FiberMeter {
   constructor(private options: FiberMeterOptions) {}
 
-  private async request(path: string, init: RequestInit = {}) {
+  // Keep the default for existing untyped SDK methods while individual methods
+  // adopt explicit response contracts incrementally.
+  private async request<T = any>(path: string, init: RequestInit = {}): Promise<T> {
     const headers = {
       'content-type': 'application/json',
       ...(this.options.apiKey ? { 'x-api-key': this.options.apiKey } : {}),
@@ -22,11 +48,22 @@ export class FiberMeter {
       headers,
     })
 
-    if (!response.ok) {
-      throw new Error(`FiberMeter request failed: ${response.status} ${await response.text()}`)
+    const text = await response.text()
+    let body: unknown = null
+
+    if (text) {
+      try {
+        body = JSON.parse(text)
+      } catch {
+        body = text
+      }
     }
 
-    return response.json()
+    if (!response.ok) {
+      throw new FiberMeterError(`FiberMeter request failed with status ${response.status}`, response.status, body)
+    }
+
+    return body as T
   }
 
   recordUsage(input: {
@@ -36,8 +73,8 @@ export class FiberMeter {
     quantity: number
     idempotencyKey: string
     metadata?: Record<string, unknown>
-  }) {
-    return this.request('/usage-events', {
+  }): Promise<UsageRecordResult> {
+    return this.request<UsageRecordResult>('/usage-events', {
       method: 'POST',
       body: JSON.stringify(input),
     })
