@@ -199,6 +199,9 @@ export function FiberPaymentDialog({
               Fiber confirmed settlement. The customer balance has been credited with{' '}
               <strong className="text-zinc-900">{request.amount} {request.asset}</strong>.
             </p>
+            <p className="mx-auto mt-3 max-w-md text-xs text-zinc-400">
+              This confirmation stays open until you choose Done or close the dialog.
+            </p>
             <Button className="mt-7" onClick={onClose}>Done</Button>
           </div>
         ) : expired ? (

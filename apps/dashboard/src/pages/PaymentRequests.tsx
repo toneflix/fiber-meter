@@ -16,6 +16,7 @@ import { Input } from '../components/ui/Input';
 import { TableSkeletonRows } from '../components/DataStates';
 import { FiberPaymentDialog } from '../components/FiberPaymentDialog';
 import { useFiberConfig } from '../lib/useFiberConfig';
+import type { PaymentRequest } from '../lib/types';
 
 function isSimulatedUri(uri: string, provider?: string) {
   return provider === 'simulated' || uri.startsWith('fiber-sim://');
@@ -36,6 +37,7 @@ export function PaymentRequests() {
   const [isAdding, setIsAdding] = useState(false);
   const [busyId, setBusyId] = useState<string | null>(null);
   const [activeRequestId, setActiveRequestId] = useState<string | null>(null);
+  const [activeRequestSnapshot, setActiveRequestSnapshot] = useState<PaymentRequest | null>(null);
   const [newReq, setNewReq] = useState({
     customerId: '',
     amount: '',
@@ -50,6 +52,7 @@ export function PaymentRequests() {
       asset: newReq.asset
     });
     if (created && !isSimulatedUri(created.paymentUri, created.provider)) {
+      setActiveRequestSnapshot(created);
       setActiveRequestId(created.id);
     }
     setIsAdding(false);
@@ -72,12 +75,30 @@ export function PaymentRequests() {
   const openPreflight = (invoice: string) => {
     sessionStorage.setItem('fibermeter_preflight_invoice', invoice);
     setActiveRequestId(null);
+    setActiveRequestSnapshot(null);
     navigate('/preflight');
   };
 
-  const activeRequest = activeRequestId
+  const refreshedActiveRequest = activeRequestId
     ? paymentRequests.find((request) => request.id === activeRequestId) ?? null
     : null;
+  const activeRequest = refreshedActiveRequest ?? (
+    activeRequestSnapshot?.id === activeRequestId ? activeRequestSnapshot : null
+  );
+
+  React.useEffect(() => {
+    if (refreshedActiveRequest) setActiveRequestSnapshot(refreshedActiveRequest);
+  }, [refreshedActiveRequest]);
+
+  const openPaymentDialog = (request: PaymentRequest) => {
+    setActiveRequestSnapshot(request);
+    setActiveRequestId(request.id);
+  };
+
+  const closePaymentDialog = () => {
+    setActiveRequestId(null);
+    setActiveRequestSnapshot(null);
+  };
   const activeCustomer = activeRequest
     ? customers.find((customer) => customer.id === activeRequest.customerId)
     : undefined;
@@ -248,7 +269,7 @@ export function PaymentRequests() {
                       <>
                           <Button
                             size="sm"
-                            onClick={() => setActiveRequestId(req.id)}>
+                            onClick={() => openPaymentDialog(req)}>
                             Fund via Fiber
                           </Button>
                         </>
@@ -277,7 +298,7 @@ export function PaymentRequests() {
       <FiberPaymentDialog
         request={activeRequest}
         customerName={activeCustomer?.name}
-        onClose={() => setActiveRequestId(null)}
+        onClose={closePaymentDialog}
         onPreflight={openPreflight}
         onVerify={verifyPaymentRequest}
         demoAutopay={demoAutopay}
