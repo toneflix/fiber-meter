@@ -29,8 +29,13 @@ docker compose up          # Postgres + API + dashboard + demo service
 - Dashboard login: `demo@fibermeter.dev` / `password123`, or click **Explore in demo mode**.
 
 Defaults to the **simulated** Fiber provider, so the entire flow works with no
-Fiber node, faucet, or channels. (Script alternative: `pnpm bootstrap && pnpm dev`.
-Real on-chain Fiber is optional — see [08-fiber-integration.md](08-fiber-integration.md).)
+Fiber node, faucet, or channels. (Script alternative: `pnpm bootstrap && pnpm dev`.)
+
+**Want real testnet settlement?** The optional **hosted live demo** lets a judge
+click *Fund via Fiber* and watch a real `fibt1…` invoice settle end-to-end — an
+auto-payer plays the customer, and the dashboard links the on-chain channel
+funding tx on the CKB testnet explorer for independent verification. Setup:
+[11-live-hosted-demo.md](11-live-hosted-demo.md).
 
 ## Demo flow
 
@@ -55,6 +60,12 @@ usage then succeeds.
   a real end-to-end testnet payment (node→node, invoice **Paid**, balances shifted),
   plus a **Preflight** tool that checks node health, invoice validity, peers,
   liquidity, and route before paying.
+- **Live demo, judge-triggerable:** an optional hosted setup
+  ([11-live-hosted-demo.md](11-live-hosted-demo.md)) adds an **auto-payer** so a
+  judge clicks *Fund via Fiber* and watches a real testnet invoice settle with no
+  terminal. The dashboard exposes each channel's **on-chain funding tx with a CKB
+  testnet explorer link** (`GET /api/fiber/live-proof`) — the balance is credited
+  only after Fiber confirms settlement, and anyone can verify the channel is real.
 - **Needs production hardening:** rate limiting, API-key scopes/rotation, secrets
   management, inbound Fiber settlement webhooks, and a hosted-node/LSP adapter for
   nodeless operation. Tracked in [ROADMAP.md](../ROADMAP.md).
@@ -91,7 +102,9 @@ TBD — _fill in before submission._
 ## Links
 
 - GitHub repository: TBD
-- Hosted demo: TBD
+- Hosted demo (simulated, zero-setup): TBD
+- Hosted **live** demo (real testnet settlement + explorer proof): TBD — see [11-live-hosted-demo.md](11-live-hosted-demo.md)
+- Sample on-chain channel funding tx (CKB testnet explorer): TBD
 - Video demo: TBD
 
 ## AI tooling note

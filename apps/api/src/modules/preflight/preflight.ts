@@ -38,7 +38,7 @@ function formatShannons(amount: bigint): string {
  *   - named record:   { state_name: "ChannelReady", state_detail: ... }  (>= 0.9)
  * Normalize both (plus a bare string) to the state name.
  */
-function channelStateName(state: unknown): string {
+export function channelStateName(state: unknown): string {
   if (!state) return ''
   if (typeof state === 'string') return state
   const obj = state as Record<string, unknown>

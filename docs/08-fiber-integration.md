@@ -48,6 +48,8 @@ FIBER_INVOICE_EXPIRY_SECS=3600
 - `new_invoice` — create top-up invoice
 - `get_invoice` — verify settlement
 - `node_info` / `parse_invoice` / `list_peers` / `list_channels` / `send_payment` (dry_run) — Preflight module
+- `list_channels` — `GET /api/fiber/live-proof` (on-chain channel funding tx + explorer link)
+- `send_payment` — auto-payer (`scripts/autopay.mjs`) settles live invoices from the payer node
 
 ## Files
 
@@ -69,9 +71,22 @@ it from **their own** node/wallet. These must be **different** nodes:
   merchant/payee node behind the API, and a separate customer/payer node that runs
   `send_payment`. A single node cannot pay its own invoice without a circular route.
 
-## Still manual for a full live demo
+## Paying the invoice: manual, or automated
 
 Someone must **pay** the invoice from a **separate** Fiber node/wallet with
-outbound liquidity (`send_payment`) — FiberMeter does not auto-pay itself. Local
-two-node setup and RPC examples are in `finish.md`. None of this is needed in the
+outbound liquidity (`send_payment`) — FiberMeter's own node does not pay itself.
+
+For a **hands-off hosted live demo**, `scripts/autopay.mjs` (npm: `pnpm autopay`)
+plays the customer: it watches the API for live pending payment requests and
+settles each from a second (payer) node, so a judge can click "Fund via Fiber"
+and watch real settlement with nobody at a terminal. Full droplet runbook:
+[11-live-hosted-demo.md](11-live-hosted-demo.md). None of this is needed in the
 default `simulated` mode.
+
+## Verifiable on-chain proof
+
+A Fiber payment is off-chain and not on any explorer, but the **channel** it
+settles through is a real on-chain CKB transaction. `GET /api/fiber/live-proof`
+returns each open channel's funding tx with a CKB testnet explorer link, surfaced
+on the dashboard **Preflight** page so anyone can independently verify the node
+runs a real, funded testnet channel.

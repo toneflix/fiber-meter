@@ -5,6 +5,7 @@
     "description": "FiberMeter monorepo",
     "scripts": {
         "bootstrap": "node scripts/bootstrap.mjs",
+        "autopay": "node scripts/autopay.mjs",
         "build": "pnpm -r build",
         "test": "pnpm -r test",
         "dev": "pnpm --parallel dev",
