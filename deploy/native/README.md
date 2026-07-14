@@ -53,23 +53,33 @@ node --version
 pnpm --version
 ```
 
-Create the service account and directories:
+Create the service account and runtime directories. TinyCP owns the existing
+site directory as `www-data`; keep its `.user.ini`, remove only the placeholder,
+and initialize the repository in place:
 
 ```bash
 sudo useradd --system --create-home --home-dir /var/lib/fibermeter --shell /usr/sbin/nologin fibermeter
-sudo mkdir -p /opt/fibermeter /opt/fibermeter/bin /etc/fibermeter /var/lib/fibermeter/payee /var/lib/fibermeter/payer
-sudo chown -R fibermeter:fibermeter /opt/fibermeter /var/lib/fibermeter
+sudo mkdir -p /etc/fibermeter /var/lib/fibermeter/payee /var/lib/fibermeter/payer /var/cache/fibermeter
+sudo chown -R fibermeter:fibermeter /var/lib/fibermeter
+sudo chown www-data:www-data /var/cache/fibermeter
 sudo chmod 750 /etc/fibermeter
+
+cd /var/www/api.fibermeter.toneflix.net
+sudo rm -f index.html
+sudo -u www-data git init
+sudo -u www-data git remote add origin YOUR_GITHUB_REPOSITORY_URL
+sudo -u www-data git fetch --depth=1 origin main
+sudo -u www-data git checkout -B main FETCH_HEAD
+sudo -u www-data mkdir -p bin
 ```
 
-Clone the GitHub repository into `/opt/fibermeter`, then build it:
+Then build it:
 
 ```bash
-sudo -u fibermeter git clone YOUR_GITHUB_REPOSITORY_URL /opt/fibermeter
-cd /opt/fibermeter
-sudo -u fibermeter pnpm install --frozen-lockfile
-sudo -u fibermeter pnpm --filter @fibermeter/api prisma:generate
-sudo -u fibermeter pnpm --filter @fibermeter/api build
+cd /var/www/api.fibermeter.toneflix.net
+sudo -u www-data env HOME=/var/cache/fibermeter npx --yes pnpm@9.12.0 install --frozen-lockfile
+sudo -u www-data env HOME=/var/cache/fibermeter npx --yes pnpm@9.12.0 --filter @fibermeter/api prisma:generate
+sudo -u www-data env HOME=/var/cache/fibermeter npx --yes pnpm@9.12.0 --filter @fibermeter/api build
 ```
 
 ## 3. PostgreSQL and secrets
@@ -110,8 +120,8 @@ Apply the schema and seed the demo account:
 set -a
 source /etc/fibermeter/api.env
 set +a
-sudo -u fibermeter --preserve-env=DATABASE_URL pnpm --dir /opt/fibermeter/apps/api exec prisma migrate deploy
-sudo -u fibermeter --preserve-env=DATABASE_URL pnpm --dir /opt/fibermeter/apps/api seed
+sudo -u www-data --preserve-env=DATABASE_URL env HOME=/var/cache/fibermeter npx --yes pnpm@9.12.0 --dir /var/www/api.fibermeter.toneflix.net/apps/api exec prisma migrate deploy
+sudo -u www-data --preserve-env=DATABASE_URL env HOME=/var/cache/fibermeter npx --yes pnpm@9.12.0 --dir /var/www/api.fibermeter.toneflix.net/apps/api seed
 ```
 
 Set the same strong demo email/password in `api.env` and `autopay.env`. The seed
@@ -125,15 +135,15 @@ Fiber releases page. Do not copy the macOS binaries or node keys from a laptop.
 Install the Linux binaries as:
 
 ```text
-/opt/fibermeter/bin/fnn
-/opt/fibermeter/bin/fnn-cli
+/var/www/api.fibermeter.toneflix.net/bin/fnn
+/var/www/api.fibermeter.toneflix.net/bin/fnn-cli
 ```
 
 Make them executable and owned by the service account:
 
 ```bash
-sudo chown fibermeter:fibermeter /opt/fibermeter/bin/fnn /opt/fibermeter/bin/fnn-cli
-sudo chmod 750 /opt/fibermeter/bin/fnn /opt/fibermeter/bin/fnn-cli
+sudo chown fibermeter:fibermeter /var/www/api.fibermeter.toneflix.net/bin/fnn /var/www/api.fibermeter.toneflix.net/bin/fnn-cli
+sudo chmod 750 /var/www/api.fibermeter.toneflix.net/bin/fnn /var/www/api.fibermeter.toneflix.net/bin/fnn-cli
 ```
 
 Create two testnet configs based on the release's example:
