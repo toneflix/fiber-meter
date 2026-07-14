@@ -178,9 +178,19 @@ sudo nginx -t
 sudo systemctl reload nginx
 ```
 
-If TinyCP manages Nginx, create `api.fibermeter.toneflix.net`, proxy `/` to
-`http://127.0.0.1:4000`, and enable its Let's Encrypt certificate instead of
-installing the server block manually.
+If TinyCP manages Nginx, create `api.fibermeter.toneflix.net` with the repository
+root as its document root. TinyCP includes the repository's
+`.nginx-fibermeter.conf` inside its generated server block, proxying `/` to
+`http://127.0.0.1:4000`. Validate and reload after each checkout:
+
+```bash
+sudo nginx -t
+sudo systemctl reload nginx
+```
+
+Enable the domain's Let's Encrypt certificate in TinyCP. Do not also install the
+standalone server block above, because that would create a competing virtual
+host.
 
 Verify:
 
