@@ -21,7 +21,7 @@ export class PaymentRequestService {
     } catch {
       throw new ApiError('validation_error', 'Payment amount must be a valid number.', 400)
     }
-    if (!amount.isFinite() || !amount.isPositive()) {
+    if (!amount.isFinite() || amount.lessThanOrEqualTo(0)) {
       throw new ApiError('validation_error', 'Payment amount must be positive.', 400)
     }
 

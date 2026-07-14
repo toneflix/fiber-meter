@@ -44,15 +44,18 @@ describe('hosted demo payment guardrails', () => {
     ).rejects.toMatchObject({ code: 'demo_testnet_only', status: 403 })
   })
 
-  it('rejects non-positive amounts in every provider mode', async () => {
-    env.fiberDemoAutopay = false
+  it.each(['0', '-0', '-1'])(
+    'rejects the non-positive amount %s in every provider mode',
+    async (amount) => {
+      env.fiberDemoAutopay = false
 
-    await expect(
-      paymentRequestService.create('dev_test', {
-        customerId: 'cus_test',
-        amount: '0',
-        asset: 'CKB',
-      }),
-    ).rejects.toMatchObject({ code: 'validation_error', status: 400 })
-  })
+      await expect(
+        paymentRequestService.create('dev_test', {
+          customerId: 'cus_test',
+          amount,
+          asset: 'CKB',
+        }),
+      ).rejects.toMatchObject({ code: 'validation_error', status: 400 })
+    },
+  )
 })
