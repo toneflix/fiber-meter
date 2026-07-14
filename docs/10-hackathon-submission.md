@@ -66,6 +66,9 @@ usage then succeeds.
   terminal. The dashboard exposes each channel's **on-chain funding tx with a CKB
   testnet explorer link** (`GET /api/fiber/live-proof`) — the balance is credited
   only after Fiber confirms settlement, and anyone can verify the channel is real.
+- **Judge-ready payment UX:** the live dashboard renders the real invoice QR and
+  watches settlement automatically while a separate, payment-capped testnet node
+  acts as the demo customer. No judge wallet, faucet, or terminal is required.
 - **Needs production hardening:** rate limiting, API-key scopes/rotation, secrets
   management, inbound Fiber settlement webhooks, and a hosted-node/LSP adapter for
   nodeless operation. Tracked in [ROADMAP.md](../ROADMAP.md).

@@ -76,6 +76,8 @@ function mapPayment(p: any): PaymentRequest {
     paymentUri: p.paymentUri,
     provider: p.provider,
     createdAt: p.createdAt,
+    expiresAt: p.expiresAt,
+    paidAt: p.paidAt ?? null,
   };
 }
 
@@ -185,11 +187,12 @@ export async function createPaymentRequest(input: {
   customerId: string;
   amount: number;
   asset: string;
-}): Promise<void> {
-  await apiFetch('/payment-requests', {
+}): Promise<PaymentRequest> {
+  const paymentRequest = await apiFetch<any>('/payment-requests', {
     method: 'POST',
     body: { ...input, amount: String(input.amount) },
   });
+  return mapPayment(paymentRequest);
 }
 
 export async function simulatePaymentPaid(id: string): Promise<void> {
@@ -207,6 +210,8 @@ export async function getFiberConfig(): Promise<{
   provider: string;
   currency: string;
   rpcUrl: string;
+  demoAutopay: boolean;
+  demoMaxPaymentCkb: number;
 }> {
   return apiFetch('/fiber/config');
 }

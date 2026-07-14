@@ -1,0 +1,20 @@
+[build]
+  command = "pnpm --filter @fibermeter/dashboard build"
+  publish = "apps/dashboard/dist"
+
+[build.environment]
+  NODE_VERSION = "20"
+  PNPM_VERSION = "9.12.0"
+  VITE_API_URL = "https://api.fibermeter.toneflix.net/api"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    X-Frame-Options = "DENY"

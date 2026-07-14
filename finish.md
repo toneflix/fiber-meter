@@ -15,7 +15,7 @@ Repo root: `fiber-meter/`
 ## What to do next (start here)
 
 Phase **C is done in code** (live `new_invoice` + `verify` via `get_invoice`,
-dashboard **Verify on Fiber**). For each new deployment, run the infrastructure
+dashboard **Fund via Fiber** dialog with automatic verification). For each new deployment, run the infrastructure
 below and prove one live payment before publishing its URL.
 
 ### 1. Finish local FiberMeter (Phase A) — today
@@ -50,7 +50,7 @@ below and prove one live payment before publishing its URL.
 
 - [ ] From a **funded** Fiber node (second node or same machine CLI), run `send_payment` with that invoice  
       Docs: https://www.fiber.world/docs/quick-start/run-a-node
-- [ ] Back in FiberMeter → **Verify on Fiber**
+- [ ] Keep **Fund via Fiber** open and wait for automatic settlement confirmation
 - [ ] Expect: status `paid`, customer balance ↑, webhook `balance.funded`
 
 ### 5. Prove metering still works
@@ -182,7 +182,7 @@ Implemented on branch `payready`. Details below kept for reference.
 - [x] Persist `provider`, `paymentUri`, `providerReference`
 - [x] `POST /api/payment-requests/:id/verify`
 - [x] Simulate Paid **disabled** when live
-- [x] Dashboard: **Verify on Fiber** + Preflight handoff
+- [x] Dashboard: **Fund via Fiber** dialog + automatic verification + Preflight handoff
 - [x] `docs/08-fiber-integration.md` updated
 
 ---
@@ -379,5 +379,5 @@ curl -X POST http://localhost:4000/api/fiber/preflight `
 - [x] C2 Provider factory via `FIBER_PROVIDER`
 - [x] C3 Persist `provider` + real `paymentUri` / `providerReference`
 - [x] C4 `POST /api/payment-requests/:id/verify`; simulate gated when live
-- [x] Dashboard **Verify on Fiber** + Preflight handoff
+- [x] Dashboard **Fund via Fiber** + automatic verification + Preflight handoff
 - [x] `docs/08-fiber-integration.md` updated

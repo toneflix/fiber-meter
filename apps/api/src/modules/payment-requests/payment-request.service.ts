@@ -1,5 +1,6 @@
 import { fiberProvider } from '../../providers/fiber/fiber-provider.js'
-import { money } from '../../utils/money.js'
+import { env } from '../../config/env.js'
+import { Decimal, money } from '../../utils/money.js'
 import { prisma } from '../../db/prisma.js'
 import { ApiError } from '../../utils/errors.js'
 import { webhookService } from '../webhooks/webhook.service.js'
@@ -14,6 +15,33 @@ export class PaymentRequestService {
       metadata?: object
     },
   ) {
+    let amount: InstanceType<typeof Decimal>
+    try {
+      amount = new Decimal(input.amount)
+    } catch {
+      throw new ApiError('validation_error', 'Payment amount must be a valid number.', 400)
+    }
+    if (!amount.isFinite() || !amount.isPositive()) {
+      throw new ApiError('validation_error', 'Payment amount must be positive.', 400)
+    }
+
+    if (env.fiberDemoAutopay) {
+      if (env.fiberCurrency !== 'Fibt') {
+        throw new ApiError(
+          'demo_testnet_only',
+          'The automated demo payer is restricted to Fiber testnet.',
+          403,
+        )
+      }
+      if (input.asset !== 'CKB' || amount.greaterThan(env.fiberDemoMaxPaymentCkb)) {
+        throw new ApiError(
+          'demo_payment_limit',
+          `Automated demo payments are limited to ${env.fiberDemoMaxPaymentCkb} CKB.`,
+          400,
+        )
+      }
+    }
+
     const providerResponse = await fiberProvider.createPaymentRequest({
       amount: input.amount,
       asset: input.asset,

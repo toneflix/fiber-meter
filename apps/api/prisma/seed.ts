@@ -4,13 +4,16 @@ import { prisma } from '../src/db/prisma.js'
 import { calculateCharge } from '../src/utils/money.js'
 
 async function main() {
+  const demoEmail = process.env.DEMO_EMAIL ?? 'demo@fibermeter.dev'
+  const demoPassword = process.env.DEMO_PASSWORD ?? 'password123'
+
   const developer = await prisma.developer.upsert({
-    where: { email: 'demo@fibermeter.dev' },
-    update: {},
+    where: { email: demoEmail },
+    update: { passwordHash: await bcrypt.hash(demoPassword, 10) },
     create: {
       name: 'Demo Developer',
-      email: 'demo@fibermeter.dev',
-      passwordHash: await bcrypt.hash('password123', 10),
+      email: demoEmail,
+      passwordHash: await bcrypt.hash(demoPassword, 10),
     },
   })
 
@@ -80,7 +83,6 @@ async function main() {
 
   console.log({
     email: developer.email,
-    password: 'password123',
     service: service.slug,
     customer: customer.externalId,
     exampleCharge: calculateCharge(pricingRule.pricingModel, pricingRule.price, 1250).toString(),

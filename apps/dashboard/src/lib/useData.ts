@@ -93,9 +93,12 @@ export function useData() {
         notify('Payment request created', async () => store.createPaymentRequest(input)),
       simulatePaymentPaid: (id: string) =>
         notify('Payment marked as paid', async () => store.simulatePaymentPaid(id)),
-      verifyPaymentRequest: async (id: string) => {
+      verifyPaymentRequest: async (id: string, options?: { silent?: boolean }) => {
         void id;
-        toast.error('Verify on Fiber is only available in Live mode');
+        if (!options?.silent) {
+          toast.error('Verify on Fiber is only available in Live mode');
+        }
+        return { verification: { paid: false } };
       },
       retryWebhook: async (id: string) => {
         void id;
@@ -162,29 +165,41 @@ export function useData() {
       }),
     createPaymentRequest: (input: PaymentRequestInput) =>
       notify('Payment request created', async () => {
-        await live.createPaymentRequest(input);
+        const paymentRequest = await live.createPaymentRequest(input);
         await invalidate('payments', 'webhooks');
+        return paymentRequest;
       }),
     simulatePaymentPaid: (id: string) =>
       notify('Payment marked as paid', async () => {
         await live.simulatePaymentPaid(id);
         await invalidate('payments', 'customers', 'webhooks');
       }),
-    verifyPaymentRequest: (id: string) =>
-      notify(null, async () => {
+    verifyPaymentRequest: async (id: string, options?: { silent?: boolean }) => {
+      try {
         const result = await live.verifyPaymentRequest(id);
         if (result.verification.paid) {
-          toast.success(
-            result.verification.alreadyPaid
-              ? 'Already paid'
-              : 'Fiber payment confirmed — balance funded',
-          );
-        } else {
+          if (!options?.silent || !result.verification.alreadyPaid) {
+            toast.success(
+              result.verification.alreadyPaid
+                ? 'Already paid'
+                : 'Fiber payment confirmed — balance funded',
+            );
+          }
+        } else if (!options?.silent) {
           toast.error('Not paid yet on Fiber — pay the invoice, then verify again');
         }
-        await invalidate('payments', 'customers', 'webhooks');
+        if (result.verification.paid) {
+          await invalidate('payments', 'customers', 'webhooks');
+        }
         return result;
-      }),
+      } catch (error) {
+        await invalidate('payments');
+        if (!options?.silent) {
+          toast.error(error instanceof Error ? error.message : 'Settlement check failed');
+        }
+        throw error;
+      }
+    },
     retryWebhook: (id: string) =>
       notify('Webhook retried', async () => {
         await live.retryWebhook(id);

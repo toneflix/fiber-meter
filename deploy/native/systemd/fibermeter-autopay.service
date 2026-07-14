@@ -1,0 +1,19 @@
+[Unit]
+Description=FiberMeter bounded testnet auto-payer
+After=network-online.target fibermeter-api.service fiber-payer.service
+Requires=fibermeter-api.service fiber-payer.service
+
+[Service]
+Type=simple
+User=fibermeter
+Group=fibermeter
+WorkingDirectory=/opt/fibermeter
+EnvironmentFile=/etc/fibermeter/autopay.env
+ExecStart=/usr/bin/node /opt/fibermeter/scripts/autopay.mjs
+Restart=on-failure
+RestartSec=5
+PrivateTmp=true
+NoNewPrivileges=true
+
+[Install]
+WantedBy=multi-user.target

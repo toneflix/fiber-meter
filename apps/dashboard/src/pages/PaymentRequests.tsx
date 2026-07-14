@@ -14,6 +14,7 @@ import { Badge } from '../components/ui/Badge';
 import { Button } from '../components/ui/Button';
 import { Input } from '../components/ui/Input';
 import { TableSkeletonRows } from '../components/DataStates';
+import { FiberPaymentDialog } from '../components/FiberPaymentDialog';
 import { useFiberConfig } from '../lib/useFiberConfig';
 
 function isSimulatedUri(uri: string, provider?: string) {
@@ -30,9 +31,11 @@ export function PaymentRequests() {
     verifyPaymentRequest,
     isLoading
   } = useData();
-  const { isLive: fiberLive } = useFiberConfig();
+  const { isLive: fiberLive, config: fiberConfig } = useFiberConfig();
+  const demoAutopay = fiberConfig?.demoAutopay ?? false;
   const [isAdding, setIsAdding] = useState(false);
   const [busyId, setBusyId] = useState<string | null>(null);
+  const [activeRequestId, setActiveRequestId] = useState<string | null>(null);
   const [newReq, setNewReq] = useState({
     customerId: '',
     amount: '',
@@ -41,26 +44,20 @@ export function PaymentRequests() {
 
   const handleAdd = async (e: React.FormEvent) => {
     e.preventDefault();
-    await createPaymentRequest({
+    const created = await createPaymentRequest({
       customerId: newReq.customerId,
       amount: parseFloat(newReq.amount),
       asset: newReq.asset
     });
+    if (created && !isSimulatedUri(created.paymentUri, created.provider)) {
+      setActiveRequestId(created.id);
+    }
     setIsAdding(false);
     setNewReq({
       customerId: '',
       amount: '',
       asset: 'CKB'
     });
-  };
-
-  const handleVerify = async (id: string) => {
-    setBusyId(id);
-    try {
-      await verifyPaymentRequest(id);
-    } finally {
-      setBusyId(null);
-    }
   };
 
   const handleSimulate = async (id: string) => {
@@ -72,6 +69,19 @@ export function PaymentRequests() {
     }
   };
 
+  const openPreflight = (invoice: string) => {
+    sessionStorage.setItem('fibermeter_preflight_invoice', invoice);
+    setActiveRequestId(null);
+    navigate('/preflight');
+  };
+
+  const activeRequest = activeRequestId
+    ? paymentRequests.find((request) => request.id === activeRequestId) ?? null
+    : null;
+  const activeCustomer = activeRequest
+    ? customers.find((customer) => customer.id === activeRequest.customerId)
+    : undefined;
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -81,11 +91,11 @@ export function PaymentRequests() {
           </h1>
           {fiberLive ?
           <p className="text-zinc-500">
-            Fund customer balances with Fiber invoices. For live invoices, run{' '}
-            <Link to="/preflight" className="text-blue-600 hover:underline">
-              Preflight
-            </Link>
-            , pay with a Fiber node, then <strong>Verify on Fiber</strong>.
+            {demoAutopay
+              ? 'Create a real testnet invoice; the separate demo payer settles it automatically. '
+              : 'Create a real invoice and settle it from a separate Fiber node. '}
+            <Link to="/preflight" className="text-blue-600 hover:underline">Preflight</Link>{' '}
+            remains available for route diagnostics.
           </p> :
 
           <p className="text-zinc-500">
@@ -133,6 +143,7 @@ export function PaymentRequests() {
                   <Input
                   type="number"
                   step="0.01"
+                  max={demoAutopay ? fiberConfig?.demoMaxPaymentCkb : undefined}
                   required
                   value={newReq.amount}
                   onChange={(e) =>
@@ -237,22 +248,8 @@ export function PaymentRequests() {
                       <>
                           <Button
                             size="sm"
-                            variant="outline"
-                            onClick={() => {
-                              sessionStorage.setItem(
-                                'fibermeter_preflight_invoice',
-                                req.paymentUri,
-                              );
-                              navigate('/preflight');
-                            }}>
-                            Preflight
-                          </Button>
-                          <Button
-                            size="sm"
-                            disabled={busyId === req.id}
-                            onClick={() => void handleVerify(req.id)}>
-                            
-                            {busyId === req.id ? 'Checking…' : 'Verify on Fiber'}
+                            onClick={() => setActiveRequestId(req.id)}>
+                            Fund via Fiber
                           </Button>
                         </>
                       }
@@ -277,6 +274,15 @@ export function PaymentRequests() {
           </Table>
         </CardContent>
       </Card>
+      <FiberPaymentDialog
+        request={activeRequest}
+        customerName={activeCustomer?.name}
+        onClose={() => setActiveRequestId(null)}
+        onPreflight={openPreflight}
+        onVerify={verifyPaymentRequest}
+        demoAutopay={demoAutopay}
+        demoMaxPaymentCkb={fiberConfig?.demoMaxPaymentCkb}
+      />
     </div>);
 
 }

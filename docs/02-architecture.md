@@ -9,9 +9,9 @@ provider supplies a zero-infrastructure local path; the live provider calls
 Fiber `new_invoice` and `get_invoice` RPC methods. Both converge on the same
 transactional balance, ledger, usage, and webhook services.
 
-The hosted live topology uses separate payee and payer nodes. FiberMeter issues
-invoices on the payee; the auto-payer settles them from the payer; the API
-credits a balance only after the payee reports the invoice as paid. See
+The hosted judge-demo topology uses separate payee and payer nodes. FiberMeter
+issues invoices on the payee; the bounded auto-payer settles them from the payer;
+the API credits a balance only after the payee reports the invoice as paid. See
 [08-fiber-integration.md](08-fiber-integration.md) and
 [11-live-hosted-demo.md](11-live-hosted-demo.md).
 

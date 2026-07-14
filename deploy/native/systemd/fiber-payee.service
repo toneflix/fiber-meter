@@ -1,0 +1,19 @@
+[Unit]
+Description=Fiber testnet payee node
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=fibermeter
+Group=fibermeter
+WorkingDirectory=/var/lib/fibermeter/payee
+EnvironmentFile=/etc/fibermeter/fiber.env
+ExecStart=/opt/fibermeter/bin/fnn -c /etc/fibermeter/payee.yml -d /var/lib/fibermeter/payee
+Restart=on-failure
+RestartSec=10
+LimitNOFILE=65535
+NoNewPrivileges=true
+
+[Install]
+WantedBy=multi-user.target

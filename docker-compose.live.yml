@@ -3,14 +3,12 @@
 #   docker compose -f docker-compose.yml -f docker-compose.live.yml up
 #
 # Runs the SAME db + API + dashboard + demo-service stack, but flips the API to
-# the LIVE Fiber provider and adds an auto-payer so a judge can click
-# "Fund via Fiber" and watch a real testnet invoice settle end-to-end.
+# the LIVE Fiber provider and starts a separate, bounded testnet auto-payer so
+# judges can trigger real settlement without installing a wallet or node.
 #
-# It expects TWO fnn Fiber nodes running ON THE HOST (see docs/11-live-hosted-demo.md):
-#   • payee node — the merchant, issues invoices — Fiber RPC on host :8237
-#   • payer node — the customer, pays invoices     — Fiber RPC on host :8247
-# The nodes stay on the host (not containerized) so their keys + channel state
-# live in one place you control and back up. Only the app tier is dockerized.
+# It expects separate payee (:8237) and payer (:8247) nodes on the host. Native
+# nodes stay there so keys and channel state can be backed up; only the app tier
+# and the stateless auto-payer loop are containerized.
 #
 # host.docker.internal lets the containers reach those host nodes; on Linux it is
 # wired via the host-gateway extra_hosts entries below.
@@ -21,6 +19,8 @@ services:
       FIBER_RPC_URL: http://host.docker.internal:8237
       FIBER_CURRENCY: Fibt
       CKB_EXPLORER_URL: https://testnet.explorer.nervos.org
+      FIBER_DEMO_AUTOPAY: "true"
+      FIBER_DEMO_MAX_PAYMENT_CKB: "5"
     extra_hosts:
       - "host.docker.internal:host-gateway"
 
@@ -36,6 +36,7 @@ services:
       API_PASSWORD: password123
       PAYER_RPC_URL: http://host.docker.internal:8247
       POLL_MS: "4000"
+      MAX_PAYMENT_CKB: "5"
     extra_hosts:
       - "host.docker.internal:host-gateway"
     depends_on:

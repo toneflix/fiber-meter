@@ -12,7 +12,7 @@ FiberMeter is reusable Fiber Network infrastructure for prepaid balances, servic
 **`simulated` is the default and requires no Fiber node, faucet, or channels.**
 The entire product (payment requests, Simulate Paid, balance funding, metering,
 ledger, webhooks) works end-to-end in this mode — it's the path judges/evaluators
-should use. Live-only surfaces (the **Preflight** page, **Verify on Fiber**) are
+should use. Live-only surfaces (the **Preflight** page and **Fund via Fiber**) are
 hidden by the dashboard when the API reports `simulated`.
 
 There are three ways to operate against Fiber:
@@ -38,10 +38,13 @@ FIBER_INVOICE_EXPIRY_SECS=3600
 
 1. Dashboard creates a payment request (CKB amount).
 2. API calls Fiber `new_invoice` (amount in shannons hex, currency `Fibt` on testnet).
-3. Dashboard shows the encoded invoice (`fibt1…`) and **Verify on Fiber**.
+3. Dashboard opens **Fund via Fiber** with the encoded invoice (`fibt1…`), QR,
+   and payer-node instructions.
 4. Optional: **Preflight** runs PayReady checks against `FIBER_RPC_URL`.
 5. A payer node / wallet calls Fiber `send_payment` with that invoice.
-6. Dashboard **Verify on Fiber** calls `get_invoice` by `payment_hash`; when status is `Paid`, FiberMeter credits the prepaid balance and emits `balance.funded`.
+6. The funding dialog periodically calls the verification endpoint. It uses
+   `get_invoice` by `payment_hash`; when status is `Paid`, FiberMeter credits the
+   prepaid balance and emits `balance.funded`.
 
 ## RPC methods used
 
@@ -76,12 +79,14 @@ it from **their own** node/wallet. These must be **different** nodes:
 Someone must **pay** the invoice from a **separate** Fiber node/wallet with
 outbound liquidity (`send_payment`) — FiberMeter's own node does not pay itself.
 
-For a **hands-off hosted live demo**, `scripts/autopay.mjs` (npm: `pnpm autopay`)
+For the **hands-off hosted live demo**, `scripts/autopay.mjs` (npm: `pnpm autopay`)
 plays the customer: it watches the API for live pending payment requests and
 settles each from a second (payer) node, so a judge can click "Fund via Fiber"
 and watch real settlement with nobody at a terminal. Full droplet runbook:
 [11-live-hosted-demo.md](11-live-hosted-demo.md). None of this is needed in the
-default `simulated` mode.
+default `simulated` mode. The dashboard renders the real invoice and watches
+settlement automatically; a local-node command remains available as a technical
+fallback.
 
 ## Verifiable on-chain proof
 

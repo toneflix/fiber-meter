@@ -21,7 +21,7 @@ import { validate } from './utils/validation.js'
 export const app = express()
 
 app.use(helmet())
-app.use(cors())
+app.use(cors({ origin: env.corsOrigins.length > 0 ? env.corsOrigins : '*' }))
 app.use(express.json())
 app.use(morgan('dev'))
 
@@ -31,6 +31,7 @@ app.get('/health', (_req, res) => {
     name: 'FiberMeter API',
     fiberProvider: fiberProvider.name,
     fiberCurrency: env.fiberCurrency,
+    demoAutopay: env.fiberDemoAutopay,
   })
 })
 
@@ -40,6 +41,8 @@ app.get('/api/fiber/config', (_req, res) => {
     currency: env.fiberCurrency,
     rpcUrl: env.fiberRpcUrl,
     invoiceExpirySecs: env.fiberInvoiceExpirySecs,
+    demoAutopay: env.fiberDemoAutopay,
+    demoMaxPaymentCkb: env.fiberDemoMaxPaymentCkb,
   })
 })
 

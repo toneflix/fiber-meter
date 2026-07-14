@@ -1,0 +1,19 @@
+[build]
+  command = "pnpm --filter @fibermeter/demo-service build"
+  publish = "apps/demo-service/dist"
+
+[build.environment]
+  NODE_VERSION = "20"
+  PNPM_VERSION = "9.12.0"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    X-Frame-Options = "DENY"

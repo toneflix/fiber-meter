@@ -32,6 +32,8 @@ flowchart LR
 - Simulated Fiber provider by default, plus a live provider that creates real
   invoices and verifies Fiber settlement through node RPC.
 - **Payment preflight (PayReady)** — `POST /api/fiber/preflight` checks node health, invoice validity, peers, liquidity, and dry-run route before `send_payment`. Dashboard page: **Preflight**.
+- Judge-ready live funding dialog with an invoice QR, bounded testnet demo payer,
+  automatic settlement detection, and a manual node fallback.
 - Polished React dashboard (services, pricing rules, customers, balances, payment
   requests, usage events, webhooks, quickstart) that runs against the **live API**
   or a fully **in-browser demo** engine — selectable at login.
@@ -153,6 +155,9 @@ otherwise, so `pnpm test` is safe to run anywhere.
 More: [services](docs/screenshots/services.png) ·
 [usage events](docs/screenshots/usage-events.png) ·
 [webhooks](docs/screenshots/webhooks.png).
+
+Live demo operation: [zero-setup auto-payer](docs/11-live-hosted-demo.md) ·
+[native Ubuntu/TinyCP deployment](deploy/native/README.md).
 
 ## Hackathon category fit
 

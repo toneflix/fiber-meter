@@ -43,7 +43,8 @@ Goal: turn the simulated payment flow into real on-chain Fiber settlement.
 - [x] Implement `LiveFiberPaymentProvider` against the Fiber Network node/API
 - [x] Generate real Fiber payment URIs / invoices (replace `fiber-sim://`)
 - [x] Verify payments via polling **and** inbound Fiber settlement webhooks
-  - Note: MVP uses on-demand `get_invoice` verify (dashboard **Verify on Fiber**); inbound Fiber webhooks still planned
+  - Note: MVP polls on-demand `get_invoice` verification while the funding dialog
+    is open; inbound Fiber webhooks are still planned
 - [x] Reconcile confirmed payments → balance funding in a single transaction
 - [x] Configurable payment expiry, cancellation, and failure handling
   - Expiry checked on verify; cancel_invoice RPC still optional

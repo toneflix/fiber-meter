@@ -167,7 +167,8 @@ No terminal, no manual `send_payment`.
 `GET /api/payment-requests`, and for each **live + pending** request calls
 `send_payment` on the **payer** node, then polls the API's `/verify` until Fiber
 confirms. Config via env (see the file header): `API_URL`, `API_EMAIL`,
-`API_PASSWORD`, `PAYER_RPC_URL`, `POLL_MS`. It never pays the same request twice.
+`API_PASSWORD`, `PAYER_RPC_URL`, `POLL_MS`, `MAX_PAYMENT_CKB`. It never pays the
+same request twice.
 
 ---
 
@@ -175,6 +176,9 @@ confirms. Config via env (see the file header): `API_URL`, `API_EMAIL`,
 
 - **Never expose `:8237` / `:8247` (Fiber RPC) publicly.** Only the containers
   (via `host.docker.internal`) and localhost should reach them.
+- Keep `FIBER_DEMO_AUTOPAY=true` restricted to `Fibt` testnet. The API and payer
+  independently enforce `FIBER_DEMO_MAX_PAYMENT_CKB` / `MAX_PAYMENT_CKB` (5 CKB
+  in the supplied Compose overlay).
 - **Persist and back up** `./fiber-payee` and `./fiber-payer` — they hold node
   keys and channel state; losing them can strand channel funds.
 - Publicly expose only the dashboard/API/demo ports, ideally behind your

@@ -47,6 +47,8 @@ export type PaymentRequest = {
   paymentUri: string;
   provider?: 'simulated' | 'live' | string;
   createdAt: string;
+  expiresAt?: string;
+  paidAt?: string | null;
 };
 
 export type UsageEvent = {

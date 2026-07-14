@@ -16,6 +16,7 @@
  *   API_PASSWORD  dashboard password               (default password123)
  *   PAYER_RPC_URL payer node Fiber RPC             (default http://127.0.0.1:8247)
  *   POLL_MS       poll interval                    (default 4000)
+ *   MAX_PAYMENT_CKB hard cap per automated request (default 5)
  *
  * The payer node MUST be a DIFFERENT node from the one behind the API
  * (FIBER_RPC_URL). A node cannot pay its own invoice. See docs/08-fiber-integration.md.
@@ -26,6 +27,7 @@ const API_EMAIL = process.env.API_EMAIL ?? 'demo@fibermeter.dev'
 const API_PASSWORD = process.env.API_PASSWORD ?? 'password123'
 const PAYER_RPC_URL = process.env.PAYER_RPC_URL ?? 'http://127.0.0.1:8247'
 const POLL_MS = Number(process.env.POLL_MS ?? 4000)
+const MAX_PAYMENT_CKB = Number(process.env.MAX_PAYMENT_CKB ?? 5)
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms))
 const ts = () => new Date().toISOString()
@@ -89,6 +91,11 @@ async function payerRpc(method, params = {}) {
 /** Pay one live invoice from the payer node, then poll the API's /verify. */
 async function settle(pr, token) {
   handled.add(pr.id)
+  const amount = Number(pr.amount)
+  if (pr.asset !== 'CKB' || !Number.isFinite(amount) || amount <= 0 || amount > MAX_PAYMENT_CKB) {
+    warn(`refusing request ${pr.id}: demo limit is ${MAX_PAYMENT_CKB} CKB`)
+    return
+  }
   const invoice = pr.paymentUri
   log(`paying request ${pr.id} (${pr.amount} ${pr.asset}) invoice ${String(invoice).slice(0, 24)}…`)
 
