@@ -25,14 +25,16 @@ consumer-facing payment app.
 docker compose up          # Postgres + API + dashboard + demo service
 ```
 
-- Dashboard → http://localhost:5173  ·  Demo app → http://localhost:5174  ·  API → http://localhost:4000
-- Dashboard login: `demo@fibermeter.dev` / `password123`, or click **Explore in demo mode**.
+- Dashboard → https://app.fibermeter.toneflix.net ·
+- Demo app → https://demo.fibermeter.toneflix.net ·
+- API → https://api.fibermeter.toneflix.net ·
+- Dashboard login: `demo@fibermeter.dev` / `******`, or click **Explore in demo mode**.
 
 Defaults to the **simulated** Fiber provider, so the entire flow works with no
 Fiber node, faucet, or channels. (Script alternative: `pnpm bootstrap && pnpm dev`.)
 
 **Want real testnet settlement?** The optional **hosted live demo** lets an auditor
-click *Fund via Fiber* and watch a real `fibt1…` invoice settle end-to-end — an
+click _Fund via Fiber_ and watch a real `fibt1…` invoice settle end-to-end — an
 auto-payer plays the customer, and the dashboard links the on-chain channel
 funding tx on the CKB testnet explorer for independent verification. Setup:
 [11-live-hosted-demo.md](11-live-hosted-demo.md).
@@ -62,7 +64,7 @@ usage then succeeds.
   validity, peers, liquidity, and route when operators need it.
 - **Auditor-triggered live flow:** an optional hosted setup
   ([11-live-hosted-demo.md](11-live-hosted-demo.md)) adds an **auto-payer** so a
-  auditor clicks *Fund via Fiber* and watches a real testnet invoice settle with no
+  auditor clicks _Fund via Fiber_ and watches a real testnet invoice settle with no
   terminal. The dashboard exposes each channel's **on-chain funding tx with a CKB
   testnet explorer link** (`GET /api/fiber/live-proof`) — the balance is credited
   only after Fiber confirms settlement, and anyone can verify the channel is real.

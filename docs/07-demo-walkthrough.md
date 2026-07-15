@@ -35,12 +35,11 @@ The header badge always shows **Live** vs **Demo**.
 
 1. Open the dashboard. Note the mode badge (Live or Demo).
 2. **Overview** — stat cards: funded, usage charged, customers, usage events.
-3. **Services** — open *AI Summary API*; show the pricing rule **10 CKB per 1,000
+3. **Services** — open _AI Summary API_; show the pricing rule **10 CKB per 1,000
    tokens** and copy the service slug.
-4. **Customers** — *Ada Demo* (`cus_demo_001`) with a **100 CKB** balance.
-5. (Live only) **Quickstart** — create an API key; copy it once.
-6. Open the standalone **Demo Service** at
-   `https://demo.fibermeter.toneflix.net`.
+4. **Customers** — _Ada Demo_ (`cus_demo_001`) with a **100 CKB** balance.
+5. **Quickstart** — create an API key; copy it once.
+6. Open the standalone **Demo Service** at `https://demo.fibermeter.toneflix.net`.
 7. Paste text and click **Summarize** → usage is recorded.
 8. FiberMeter calculates the charge and deducts the balance.
 9. Back on **Usage Events**, the charge appears (filter by status = charged).
