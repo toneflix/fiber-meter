@@ -42,8 +42,7 @@ VITE_API_URL=http://localhost:4000/api
 
 ## Notes
 
-- The Demo Service page (`/demo-service`) simulates a third-party "AI Summary
-  API" that meters usage through FiberMeter. In live mode it ingests usage with
-  an API key created on the Quickstart page.
+- The dashboard banner opens the standalone Demo Service configured through
+  `VITE_DEMO_SERVICE_URL`.
 - Amounts are handled as decimal strings by the API and coerced to numbers in
   the UI data layer (`src/lib/live.ts`).

@@ -16,6 +16,10 @@ import { Button } from '../components/ui/Button';
 import { LiveErrorBanner } from '../components/DataStates';
 import { useAuth } from '../lib/auth-context';
 import { useData } from '../lib/useData';
+
+const demoServiceUrl =
+  import.meta.env.VITE_DEMO_SERVICE_URL ?? 'https://demo.fibermeter.toneflix.net';
+
 const navItems = [
 {
   name: 'Overview',
@@ -102,12 +106,14 @@ export function DashboardLayout() {
             <p className="text-blue-700 mb-3">
               A sample AI Summary API that meters usage through FiberMeter.
             </p>
-            <Link
-              to="/demo-service"
+            <a
+              href={demoServiceUrl}
+              target="_blank"
+              rel="noreferrer"
               className="text-blue-700 font-medium hover:underline flex items-center gap-1">
 
               Open Demo Service <Zap className="h-3 w-3" />
-            </Link>
+            </a>
           </div>
         </div>
       </aside>

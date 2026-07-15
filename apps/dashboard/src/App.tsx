@@ -13,7 +13,6 @@ import { UsageEvents } from './pages/UsageEvents';
 import { Webhooks } from './pages/Webhooks';
 import { Quickstart } from './pages/Quickstart';
 import { Preflight } from './pages/Preflight';
-import { DemoService } from './pages/DemoService';
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: 1, refetchOnWindowFocus: false } },
@@ -46,7 +45,6 @@ export function App() {
                 <Route path="webhooks" element={<Webhooks />} />
                 <Route path="quickstart" element={<Quickstart />} />
               </Route>
-              <Route path="/demo-service" element={<DemoService />} />
             </Route>
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>

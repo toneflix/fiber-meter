@@ -39,7 +39,8 @@ The header badge always shows **Live** vs **Demo**.
    tokens** and copy the service slug.
 4. **Customers** — *Ada Demo* (`cus_demo_001`) with a **100 CKB** balance.
 5. (Live only) **Quickstart** — create an API key; copy it once.
-6. Open the **Demo Service** (`/demo-service`).
+6. Open the standalone **Demo Service** at
+   `https://demo.fibermeter.toneflix.net`.
 7. Paste text and click **Summarize** → usage is recorded.
 8. FiberMeter calculates the charge and deducts the balance.
 9. Back on **Usage Events**, the charge appears (filter by status = charged).
