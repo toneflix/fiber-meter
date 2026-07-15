@@ -102,5 +102,9 @@ export class FiberMeter {
 export function verifyWebhookSignature(payload: string, signature: string, secret: string, timestamp: string) {
   const expected = crypto.createHmac('sha256', secret).update(`${timestamp}.${payload}`).digest('hex')
 
+  if (!/^[0-9a-f]{64}$/i.test(signature) || signature.length !== expected.length) {
+    return false
+  }
+
   return crypto.timingSafeEqual(Buffer.from(expected), Buffer.from(signature))
 }

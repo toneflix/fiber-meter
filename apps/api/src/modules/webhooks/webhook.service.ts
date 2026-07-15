@@ -7,6 +7,13 @@ export function signWebhook(body: string, secret: string, timestamp = Date.now()
   return crypto.createHmac('sha256', secret).update(`${timestamp}.${body}`).digest('hex')
 }
 
+export function createWebhookAuth(body: string, secret: string, timestamp = Date.now().toString()) {
+  return {
+    timestamp,
+    signature: signWebhook(body, secret, timestamp),
+  }
+}
+
 export class WebhookService {
   async enqueue(input: {
     developerId: string
@@ -21,7 +28,7 @@ export class WebhookService {
     }
 
     const body = JSON.stringify(input.payload)
-    const signature = signWebhook(body, input.secret ?? 'dev')
+    const { signature } = createWebhookAuth(body, input.secret ?? 'dev')
 
     const delivery = await prisma.webhookDelivery.create({
       data: {
@@ -40,24 +47,28 @@ export class WebhookService {
   }
 
   async deliver(id: string) {
-    const delivery = await prisma.webhookDelivery.findUnique({ where: { id } })
+    const delivery = await prisma.webhookDelivery.findUnique({
+      where: { id },
+      include: { service: { select: { webhookSecret: true, webhookUrl: true } } },
+    })
 
     if (!delivery) {
       return
     }
 
-    const timestamp = Date.now().toString()
     const body = JSON.stringify(delivery.payload)
+    const auth = createWebhookAuth(body, delivery.service?.webhookSecret ?? 'dev')
+    const targetUrl = delivery.service?.webhookUrl ?? delivery.targetUrl
 
     try {
-      const response = await request(delivery.targetUrl, {
+      const response = await request(targetUrl, {
         method: 'POST',
         body,
         headers: {
           'content-type': 'application/json',
           'X-FiberMeter-Event': delivery.eventType,
-          'X-FiberMeter-Signature': delivery.signature ?? '',
-          'X-FiberMeter-Timestamp': timestamp,
+          'X-FiberMeter-Signature': auth.signature,
+          'X-FiberMeter-Timestamp': auth.timestamp,
         },
       })
 
@@ -69,6 +80,8 @@ export class WebhookService {
           lastAttemptAt: new Date(),
           responseStatus: response.statusCode,
           responseBody: await response.body.text(),
+          signature: auth.signature,
+          targetUrl,
         },
       })
     } catch (error) {
