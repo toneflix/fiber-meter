@@ -39,12 +39,12 @@ Pass the API origin without `/api`; the SDK appends `/api` to every request.
 Use an API key created on the dashboard's **Quickstart** page:
 
 ```ts
-import { FiberMeter } from '@fibermeter/sdk'
+import { FiberMeter } from '@fibermeter/sdk';
 
 const meter = new FiberMeter({
   baseUrl: process.env.FIBERMETER_API_URL!,
   apiKey: process.env.FIBERMETER_API_KEY!,
-})
+});
 ```
 
 ### Management client
@@ -55,7 +55,7 @@ Customer, balance, and payment-request endpoints use a dashboard JWT:
 const management = new FiberMeter({
   baseUrl: process.env.FIBERMETER_API_URL!,
   token: process.env.FIBERMETER_DASHBOARD_TOKEN!,
-})
+});
 ```
 
 Use separate ingestion and management clients. If both credentials are added
@@ -75,19 +75,19 @@ const result = await meter.recordUsage({
     model: 'summary-v1',
     requestId: 'request_123',
   },
-})
+});
 ```
 
 The fields are:
 
-| Field | Meaning |
-| --- | --- |
-| `service` | Metered-service slug owned by the API-key developer. |
-| `customer` | External customer ID, not the database UUID. |
-| `metricKey` | Active pricing-rule metric, such as `tokens`. |
-| `quantity` | Positive numeric usage quantity. |
+| Field            | Meaning                                                 |
+| ---------------- | ------------------------------------------------------- |
+| `service`        | Metered-service slug owned by the API-key developer.    |
+| `customer`       | External customer ID, not the database UUID.            |
+| `metricKey`      | Active pricing-rule metric, such as `tokens`.           |
+| `quantity`       | Positive numeric usage quantity.                        |
 | `idempotencyKey` | Unique operation key used to prevent duplicate charges. |
-| `metadata` | Optional JSON metadata stored with the usage event. |
+| `metadata`       | Optional JSON metadata stored with the usage event.     |
 
 When the customer has sufficient prepaid balance:
 
@@ -132,7 +132,7 @@ const customer = await management.createCustomer({
   name: 'Acme Labs',
   email: 'billing@acme.example',
   metadata: { plan: 'developer' },
-})
+});
 ```
 
 `externalId` must be unique within the developer account. Save both returned
@@ -147,10 +147,10 @@ const payment = await management.createPaymentRequest({
   amount: '5',
   asset: 'CKB',
   metadata: { orderId: 'order_123' },
-})
+});
 
-console.log(payment.paymentUri)
-console.log(payment.expiresAt)
+console.log(payment.paymentUri);
+console.log(payment.expiresAt);
 ```
 
 Amounts are decimal strings. `customerId` is the database ID returned by
@@ -162,11 +162,11 @@ only after the payment request is verified as paid.
 ## Read a balance
 
 ```ts
-const balance = await management.getBalance(customer.id, 'CKB')
+const balance = await management.getBalance(customer.id, 'CKB');
 
-console.log(balance.availableBalance)
-console.log(balance.totalFunded)
-console.log(balance.totalSpent)
+console.log(balance.availableBalance);
+console.log(balance.totalFunded);
+console.log(balance.totalSpent);
 ```
 
 The asset defaults to `CKB`. Monetary values are returned as decimal strings;
@@ -178,17 +178,17 @@ Non-2xx responses throw `FiberMeterError`. It preserves the HTTP status and the
 parsed response body:
 
 ```ts
-import { FiberMeterError } from '@fibermeter/sdk'
+import { FiberMeterError } from '@fibermeter/sdk';
 
 try {
-  await meter.recordUsage(input)
+  await meter.recordUsage(input);
 } catch (error) {
   if (error instanceof FiberMeterError) {
-    console.error(error.status)
-    console.error(error.body)
+    console.error(error.status);
+    console.error(error.body);
   } else {
     // Network error, timeout, or runtime failure.
-    throw error
+    throw error;
   }
 }
 ```
@@ -201,11 +201,11 @@ An insufficient balance is a successful metering response with
 FiberMeter currently emits `usage.charged` to the webhook URL configured on the
 metered service. Delivery uses these headers:
 
-| Header | Meaning |
-| --- | --- |
-| `X-FiberMeter-Event` | Event type, currently `usage.charged`. |
+| Header                   | Meaning                                           |
+| ------------------------ | ------------------------------------------------- |
+| `X-FiberMeter-Event`     | Event type, currently `usage.charged`.            |
 | `X-FiberMeter-Timestamp` | Millisecond Unix timestamp used in the signature. |
-| `X-FiberMeter-Signature` | Lowercase hexadecimal HMAC-SHA256 signature. |
+| `X-FiberMeter-Signature` | Lowercase hexadecimal HMAC-SHA256 signature.      |
 
 The signed value is:
 
@@ -230,25 +230,25 @@ bytes. Register an Express raw-body route before any global `express.json()`
 middleware:
 
 ```ts
-import express from 'express'
-import { verifyWebhookSignature } from '@fibermeter/sdk'
+import express from 'express';
+import { verifyWebhookSignature } from '@fibermeter/sdk';
 
-const app = express()
-const fiveMinutes = 5 * 60 * 1000
+const app = express();
+const fiveMinutes = 5 * 60 * 1000;
 
 app.post(
   '/webhooks/fibermeter',
   express.raw({ type: 'application/json' }),
   (req, res) => {
-    const payload = req.body.toString('utf8')
-    const signature = String(req.headers['x-fibermeter-signature'] ?? '')
-    const timestamp = String(req.headers['x-fibermeter-timestamp'] ?? '')
-    const event = String(req.headers['x-fibermeter-event'] ?? '')
-    const timestampNumber = Number(timestamp)
+    const payload = req.body.toString('utf8');
+    const signature = String(req.headers['x-fibermeter-signature'] ?? '');
+    const timestamp = String(req.headers['x-fibermeter-timestamp'] ?? '');
+    const event = String(req.headers['x-fibermeter-event'] ?? '');
+    const timestampNumber = Number(timestamp);
 
     const current =
       Number.isFinite(timestampNumber) &&
-      Math.abs(Date.now() - timestampNumber) <= fiveMinutes
+      Math.abs(Date.now() - timestampNumber) <= fiveMinutes;
 
     const valid =
       current &&
@@ -257,24 +257,24 @@ app.post(
         signature,
         process.env.FIBERMETER_WEBHOOK_SECRET!,
         timestamp,
-      )
+      );
 
     if (!valid) {
-      return res.status(401).json({ error: 'invalid signature' })
+      return res.status(401).json({ error: 'invalid signature' });
     }
 
-    const body = JSON.parse(payload)
+    const body = JSON.parse(payload);
 
     if (event === 'usage.charged') {
-      console.log(body.usageEventId, body.amount, body.asset)
+      console.log(body.usageEventId, body.amount, body.asset);
     }
 
-    return res.status(200).json({ received: true })
+    return res.status(200).json({ received: true });
   },
-)
+);
 
 // Register JSON parsing after the raw webhook route.
-app.use(express.json())
+app.use(express.json());
 ```
 
 For Fetch-compatible server runtimes, read `await request.text()` once and pass

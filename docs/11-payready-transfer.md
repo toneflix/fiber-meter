@@ -5,14 +5,14 @@ diagnostics API. It is intentionally not a step in the primary payment flow.
 
 ## What landed
 
-| Piece | Location |
-|-------|----------|
-| Fiber RPC client | `apps/api/src/modules/preflight/rpc.ts` |
-| Preflight engine | `apps/api/src/modules/preflight/preflight.ts` |
-| Error translator | `apps/api/src/modules/preflight/errors.ts` |
-| API routes | `GET /api/fiber/health`, `POST /api/fiber/preflight`, `POST /api/fiber/translate-error` |
-| Optional dashboard UI | Payment dialog → **Preflight Diagnostics** |
-| Dashboard proof | **Overview** → live channel funding transaction |
+| Piece                 | Location                                                                                |
+| --------------------- | --------------------------------------------------------------------------------------- |
+| Fiber RPC client      | `apps/api/src/modules/preflight/rpc.ts`                                                 |
+| Preflight engine      | `apps/api/src/modules/preflight/preflight.ts`                                           |
+| Error translator      | `apps/api/src/modules/preflight/errors.ts`                                              |
+| API routes            | `GET /api/fiber/health`, `POST /api/fiber/preflight`, `POST /api/fiber/translate-error` |
+| Optional dashboard UI | Payment dialog → **Preflight Diagnostics**                                              |
+| Dashboard proof       | **Overview** → live channel funding transaction                                         |
 
 ## Env
 

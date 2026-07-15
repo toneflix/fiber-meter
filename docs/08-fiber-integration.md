@@ -4,10 +4,10 @@ FiberMeter is reusable Fiber Network infrastructure for prepaid balances, servic
 
 ## Modes
 
-| `FIBER_PROVIDER` | Create payment | Confirm payment |
-|------------------|----------------|-----------------|
-| `simulated` **(default)** | `fiber-sim://…` URI | `POST /api/payment-requests/:id/simulate-paid` |
-| `live` | Fiber RPC `new_invoice` → `fibt1…` | Pay invoice, then `POST /api/payment-requests/:id/verify` |
+| `FIBER_PROVIDER`          | Create payment                     | Confirm payment                                           |
+| ------------------------- | ---------------------------------- | --------------------------------------------------------- |
+| `simulated` **(default)** | `fiber-sim://…` URI                | `POST /api/payment-requests/:id/simulate-paid`            |
+| `live`                    | Fiber RPC `new_invoice` → `fibt1…` | Pay invoice, then `POST /api/payment-requests/:id/verify` |
 
 **`simulated` is the default and requires no Fiber node, faucet, or channels.**
 The entire product (payment requests, Simulate Paid, balance funding, metering,
@@ -20,7 +20,7 @@ There are three ways to operate against Fiber:
 1. **Simulated** — default, zero infrastructure (above).
 2. **Self-hosted live node** — run one `fnn` node you control as the merchant
    (payee) and point `FIBER_RPC_URL` at it. Covered below.
-3. **Hosted node / LSP** *(future)* — point the provider at a managed Fiber
+3. **Hosted node / LSP** _(future)_ — point the provider at a managed Fiber
    node/LSP with an API, for nodeless operation. Not yet available in the Fiber
    ecosystem, but the `FiberPaymentProvider` interface is ready for a
    `HostedFiberProvider` adapter (see [ROADMAP.md](../ROADMAP.md), Phase 1).

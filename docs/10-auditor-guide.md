@@ -102,7 +102,7 @@ on Fiber without building the money plumbing themselves.
 
 ## Deployment links
 
-- GitHub repository: https://github.com/toneflix/fiber-meter
+- GitHub repository: https://github.com/toneflix/fibermeter
 - Hosted dashboard: configure for the target deployment
 - Hosted **live** demo (real testnet settlement + explorer proof): see
   [11-live-hosted-demo.md](11-live-hosted-demo.md)

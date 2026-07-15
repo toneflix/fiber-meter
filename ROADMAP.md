@@ -32,7 +32,7 @@ SDK, and docs all tell one story.
 - [x] Auditor review guide updated (`docs/10`)
 - [x] Capture dashboard + demo screenshots (in `docs/screenshots/`)
 - [x] Backend test suite: pricing, webhook signature, balance funding, usage charging, insufficient balance, idempotency
-- [ ] Record the demo walkthrough video (script in `docs/07-demo-walkthrough.md`)
+- [x] Record the demo walkthrough video (script in `docs/07-demo-walkthrough.md`)
 - [x] Fill deployment links: repository / hosted demo / walkthrough (`docs/10`)
 - [x] Run the live stack once (Postgres + seed) to confirm end-to-end in Live mode
 
