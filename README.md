@@ -153,7 +153,10 @@ and idempotency. The integration tests run when a migrated database is reachable
 via `DATABASE_URL` (e.g. after `docker compose up -d postgres`) and skip cleanly
 otherwise, so `pnpm test` is safe to run anywhere.
 
-## Screenshots
+## Experience
+
+![webhooks](docs/screenshots/walk-through.mp4)
+Walkthrough Video
 
 **Dashboard overview** — services, prepaid balances, and recent metered usage:
 
