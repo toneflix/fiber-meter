@@ -184,6 +184,12 @@ through live Fiber settlement, production hardening, multi-tenancy/RBAC,
 subscriptions and tiered pricing, real-time analytics, an SDK ecosystem, scale,
 and go-to-market.
 
+## Documentation
+
+See the [documentation index](docs/README.md) for setup, architecture, API and
+SDK integration, webhooks, Fiber operations, hosted deployment, and the auditor
+walkthrough.
+
 ## License
 
 MIT.
