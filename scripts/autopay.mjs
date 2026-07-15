@@ -8,8 +8,8 @@
  * Fiber node (the customer/payer node) via `send_payment`. The API's own
  * `/verify` endpoint then confirms settlement and credits the balance.
  *
- * This is what lets an auditor click "Fund via Fiber" on the hosted live demo and
- * watch a real testnet invoice settle end-to-end with nobody at a terminal.
+ * This supports repeatable hosted product testing: a user can click "Fund via
+ * Fiber" and watch a real testnet invoice settle without operating a wallet.
  *
  *   API_URL       FiberMeter API base, incl. /api  (default http://localhost:4000/api)
  *   API_EMAIL     dashboard login                  (default demo@fibermeter.dev)

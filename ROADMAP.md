@@ -29,22 +29,21 @@ SDK, and docs all tell one story.
 - [x] Verify the seed matches the dashboard/demo contracts (dev, service, rule, customer, balance)
 - [x] Root README polish: dashboard modes, architecture diagram, roadmap link
 - [x] Demo walkthrough script updated for the live/demo dashboard (`docs/07`)
-- [x] Auditor review guide updated (`docs/10`)
+- [x] Product guide updated (`docs/10-product-guide.md`)
 - [x] Capture dashboard + demo screenshots (in `docs/screenshots/`)
 - [x] Backend test suite: pricing, webhook signature, balance funding, usage charging, insufficient balance, idempotency
-- [x] Record the demo walkthrough video (script in `docs/07-demo-walkthrough.md`)
-- [x] Fill deployment links: repository / hosted demo / walkthrough (`docs/10`)
+- [x] Document and record the product walkthrough (`docs/07-demo-walkthrough.md`)
+- [x] Document repository, hosted services, and walkthrough links
 - [x] Run the live stack once (Postgres + seed) to confirm end-to-end in Live mode
 
 ## Phase 1 — Live Fiber Integration
 
-Goal: turn the simulated payment flow into real on-chain Fiber settlement.
+Goal: connect the billing flow to real Fiber settlement.
 
 - [x] Implement `LiveFiberPaymentProvider` against the Fiber Network node/API
 - [x] Generate real Fiber payment URIs / invoices (replace `fiber-sim://`)
-- [x] Verify payments via polling **and** inbound Fiber settlement webhooks
-  - Note: MVP polls on-demand `get_invoice` verification while the funding dialog
-    is open; inbound Fiber webhooks are still planned
+- [x] Verify payments through on-demand `get_invoice` polling
+- [ ] Add inbound Fiber settlement notifications
 - [x] Reconcile confirmed payments → balance funding in a single transaction
 - [x] Configurable payment expiry, cancellation, and failure handling
   - Expiry checked on verify; cancel_invoice RPC still optional
@@ -151,7 +150,7 @@ Goal: something a business can safely depend on and adopt.
 
 ### How the phases map to product maturity
 
-- **Phase 0** is the auditor-visible baseline — reusable infrastructure, a clear
+- **Phase 0** is the product baseline — reusable infrastructure, a clear
   simulated-vs-live boundary, and an end-to-end working flow.
 - **Phase 1** is the single most credible "next step": swap the simulated
   provider for real Fiber settlement behind the existing `FiberPaymentProvider`

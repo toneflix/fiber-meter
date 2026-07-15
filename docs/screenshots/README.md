@@ -16,4 +16,4 @@ Payment Requests page with a real-paid request.
 Webhooks page with an expanded payload.
 
 ![webhooks](./walk-through.mp4)
-Walkthrough Video
+Product walkthrough video

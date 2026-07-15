@@ -2,10 +2,9 @@
 
 FiberMeter is reusable Fiber Network infrastructure for prepaid balances, service metering, payment tracking, ledgering, and signed webhooks.
 
-FiberMeter emits the same signed billing events in simulated and live payment
-modes. In live mode, `balance.funded` is emitted only after Fiber RPC confirms
-that the invoice is paid; simulated mode is explicitly marked and intended for
-local evaluation.
+Service usage emits the same signed `usage.charged` event in simulated and live
+payment modes. Payment settlement mode does not change the service webhook
+contract.
 
 ## Delivery contract
 

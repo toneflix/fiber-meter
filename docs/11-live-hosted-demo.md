@@ -1,16 +1,16 @@
-# Hosted live demo — real testnet settlement, zero auditor setup
+# Hosted live demo operations
 
-This is the externally verifiable path: a persistent demo where an auditor clicks **Fund via
-Fiber** and watches a **real Fiber testnet invoice settle end-to-end**, then
-verifies the underlying channel on a public block explorer — with nobody at a
-terminal.
+This runbook describes a persistent product-testing environment where a user
+clicks **Fund via Fiber**, a real Fiber testnet invoice settles end to end, and
+the underlying channel can be inspected on a public block explorer without
+requiring terminal access during the payment flow.
 
 It complements (does not replace) the turnkey **simulated** path
-(`docker compose up`), which auditors can still run themselves from scratch.
+(`docker compose up`) used for local development.
 
 ---
 
-## What auditors can independently verify
+## Settlement evidence
 
 A Fiber payment is **off-chain** — an HTLC update inside a payment channel. It
 does not appear on any block explorer, by design. What *is* on-chain and
@@ -23,17 +23,18 @@ checkable proof we surface is:
 2. Clicking **Fund via Fiber** issues a real `fibt1…` invoice; the balance is
    credited **only after** the API's `/verify` confirms Fiber settled it.
 
-Auditors verify: *"this is a real, funded channel on CKB testnet, and the balance
-moved only after real settlement."*
+Together, these surfaces show that the deployment uses a funded CKB testnet
+channel and that FiberMeter moves the customer balance only after settlement.
 
 ---
 
-## Why this can't be fully hands-off from an auditor's laptop
+## Why the hosted environment needs one-time bootstrap
 
 Going live needs two funded testnet nodes + an open channel. Funding comes from
 the CKB faucet (external, rate-limited) and a channel open needs on-chain
-confirmation — no `docker compose up` can conjure faucet CKB. So **we** do that
-one-time bootstrap ahead of time and keep it running; auditors use the hosted flow.
+confirmation. Local application startup cannot create faucet capacity or an
+on-chain channel automatically, so operators complete this bootstrap once and
+persist the node state.
 
 ---
 
@@ -147,15 +148,15 @@ payee `:8237`, preflight → payer `:8247`) + dashboard + demo-service +
 
 ---
 
-## The auditor experience
+## Hosted user flow
 
 1. Open the dashboard, log in (`demo@fibermeter.dev` / `password123`).
 2. **Overview** → **Live Fiber channel proof** shows the channel with a
    CKB testnet explorer link. Click it — real funding tx on testnet. ✅
 3. Create a **Payment Request** for a customer → a real `fibt1…` invoice.
 4. Within a few seconds **autopay** settles it from the payer node; the request
-   flips to **Paid**, the balance is credited, a `balance.funded` webhook fires,
-   and the confirmation keeps the CKB Explorer proof link visible.
+   flips to **Paid**, the balance is credited, and the confirmation keeps the
+   CKB Explorer proof link visible.
 5. Run the demo service / record usage → the live-funded balance is charged.
 
 No terminal, no manual `send_payment`.
@@ -186,5 +187,5 @@ same request twice.
   existing reverse proxy + TLS.
 - If the droplet restarts, restart the two nodes; channel state persists and
   funds are safe (the live demo is briefly unavailable until they're back).
-- Put the hosted URL and a sample channel explorer link in
-  [10-auditor-guide.md](10-auditor-guide.md).
+- Record hosted URLs, node ownership, channel capacity, and recovery procedures
+  in private operator documentation.

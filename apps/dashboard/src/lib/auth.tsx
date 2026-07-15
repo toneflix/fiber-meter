@@ -4,8 +4,8 @@
  * Two ways to use FiberMeter's dashboard:
  *  - Live:  authenticate a developer against the real API (JWT persisted to
  *           localStorage); every page reads/writes the Express + Postgres backend.
- *  - Demo:  no backend required — the whole billing engine runs in-browser via the
- *           zustand store, so auditors can explore the full flow offline.
+ *  - Demo:  no backend required — the billing flow runs in-browser through the
+ *           zustand store for local and offline product exploration.
  */
 import React, { useCallback, useMemo, useState } from 'react';
 import { apiFetch, apiKeyStore, tokenStore } from './api';

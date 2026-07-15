@@ -16,8 +16,7 @@ import { API_BASE } from '../lib/api';
 /*
  * Developer Quickstart.
  * Surfaces real API keys, SDK usage, curl examples, and webhook verification
- * so auditors immediately see FiberMeter as reusable, drop-in billing
- * infrastructure rather than a one-off consumer app.
+ * for integrating FiberMeter as reusable billing infrastructure.
  */
 function CodeBlock({ code, label }: {code: string;label?: string;}) {
   const [copied, setCopied] = useState(false);

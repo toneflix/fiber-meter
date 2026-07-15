@@ -27,11 +27,12 @@ confirms payment. See [08-fiber-integration.md](08-fiber-integration.md).
 - **Live** — run the API (`pnpm dev` after seeding) and sign in at the dashboard
   with `demo@fibermeter.dev` / `password123`. Everything reads/writes PostgreSQL.
 - **Demo (no backend)** — `pnpm --filter @fibermeter/dashboard dev`, then click
-  **Explore in demo mode**. The whole flow runs client-side — perfect for a video.
+  **Explore in demo mode**. The whole flow runs client-side for offline product
+  exploration.
 
 The header badge always shows **Live** vs **Demo**.
 
-## Demo script (2–3 minutes)
+## Guided product flow
 
 1. Open the dashboard. Note the mode badge (Live or Demo).
 2. **Overview** — stat cards: funded, usage charged, customers, usage events.
@@ -48,11 +49,11 @@ The header badge always shows **Live** vs **Demo**.
 12. See the **insufficient balance / payment required** response.
 13. **Payment Requests** — create a request for the customer; copy the payment URI.
 14. Click **Simulate Paid** (the simulated Fiber payment).
-15. The balance is funded; a `balance.funded` webhook is emitted.
+15. The balance is funded and a ledger entry records the credit.
 16. Retry the summary → it now succeeds.
 
 ## Production hardening
 
-Live Fiber verification, queue-backed webhook retries, balance-locking review,
-rate limits, audit logs, secrets management, and hosted deployments. See
-[ROADMAP.md](../ROADMAP.md).
+Further hardening includes queue-backed webhook retries, balance reconciliation,
+rate limits, operational audit logs, managed secrets, and production
+observability. See [ROADMAP.md](../ROADMAP.md).

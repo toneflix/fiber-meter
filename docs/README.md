@@ -1,19 +1,19 @@
 # FiberMeter documentation
 
-This directory contains the product, integration, deployment, and review
+This directory contains the product, integration, deployment, and operations
 documentation for FiberMeter. Start with the path that matches what you are
 trying to do.
 
 ## Choose a path
 
-| Goal                          | Start here                                   | Continue with                                                                          |
-| ----------------------------- | -------------------------------------------- | -------------------------------------------------------------------------------------- |
-| Understand FiberMeter         | [Overview](01-overview.md)                   | [Architecture](02-architecture.md)                                                     |
-| Run it locally                | [Quickstart](03-quickstart.md)               | [Demo walkthrough](07-demo-walkthrough.md)                                             |
-| Integrate a service           | [API reference](04-api-reference.md)         | [JavaScript SDK](05-sdk.md), [Webhooks](06-webhooks.md)                                |
-| Operate real Fiber settlement | [Fiber integration](08-fiber-integration.md) | [Hosted live demo](11-live-hosted-demo.md)                                             |
-| Review or audit the project   | [Auditor guide](10-auditor-guide.md)         | [Demo walkthrough](07-demo-walkthrough.md), [Hosted live demo](11-live-hosted-demo.md) |
-| Evaluate remaining work       | [Roadmap summary](09-roadmap.md)             | [Maintained roadmap](../ROADMAP.md)                                                    |
+| Goal | Start here | Continue with |
+| --- | --- | --- |
+| Understand FiberMeter | [Overview](01-overview.md) | [Architecture](02-architecture.md) |
+| Run it locally | [Quickstart](03-quickstart.md) | [Demo walkthrough](07-demo-walkthrough.md) |
+| Integrate a service | [API reference](04-api-reference.md) | [JavaScript SDK](05-sdk.md), [Webhooks](06-webhooks.md) |
+| Operate real Fiber settlement | [Fiber integration](08-fiber-integration.md) | [Hosted live demo](11-live-hosted-demo.md) |
+| Understand product capabilities | [Product guide](10-product-guide.md) | [Demo walkthrough](07-demo-walkthrough.md), [Hosted live demo](11-live-hosted-demo.md) |
+| Plan future work | [Roadmap summary](09-roadmap.md) | [Maintained roadmap](../ROADMAP.md) |
 
 ## Documentation index
 
@@ -43,12 +43,12 @@ trying to do.
    node configuration, RPC boundaries, channels, and settlement verification.
 9. [Roadmap summary](09-roadmap.md) — current delivery status and links to the
    actively maintained project roadmap.
-10. [Auditor review guide](10-auditor-guide.md) — concise project positioning,
-    review sequence, evidence, and evaluation notes.
+10. [Product guide](10-product-guide.md) — product positioning, supported flows,
+    current capabilities, technical architecture, and product boundaries.
 
 ### Hosted deployment and transfer notes
 
-- [Hosted live demo](11-live-hosted-demo.md) — externally verifiable testnet
+- [Hosted live demo](11-live-hosted-demo.md) — persistent testnet
   deployment, auto-payer flow, and on-chain channel-funding evidence.
 - [PayReady transfer](11-payready-transfer.md) — provenance and integration map
   for the operator-facing Fiber preflight diagnostics.

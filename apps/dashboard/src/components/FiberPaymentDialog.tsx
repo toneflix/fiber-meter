@@ -210,7 +210,7 @@ export function FiberPaymentDialog({
               </h2>
               <p className="text-sm text-zinc-500">
                 {demoAutopay
-                  ? `Auditor-triggered testnet payment${customerName ? ` for ${customerName}` : ''}`
+                  ? `Automated testnet payment${customerName ? ` for ${customerName}` : ''}`
                   : customerName
                     ? `Funding ${customerName}`
                     : 'Live Fiber payment request'}
@@ -356,7 +356,7 @@ export function FiberPaymentDialog({
                       </p>
                       <p className="mt-1 text-sm text-green-800">
                         {demoAutopay
-                          ? 'The hosted demo payer normally handles settlement. This command is only a fallback for auditors who want to pay from another funded testnet node.'
+                          ? 'The hosted demo payer normally handles settlement. This command is an operator fallback for payment from another funded testnet node.'
                           : 'FiberMeter never connects to your payer RPC and never receives its keys. Run this command on the machine hosting your funded payer node.'}
                       </p>
                     </div>

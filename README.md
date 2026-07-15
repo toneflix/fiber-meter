@@ -35,7 +35,7 @@ flowchart LR
   payment dialog's optional **Preflight Diagnostics** action let operators check
   node health, invoice validity, peers, liquidity, and dry-run routes without
   adding a step to the primary payment flow.
-- Auditor-friendly live funding dialog with an invoice QR, bounded testnet demo payer,
+- Live funding dialog with an invoice QR, bounded testnet demo payer,
   automatic settlement detection, a manual node fallback, and a CKB Explorer
   link proving the channel-funding transaction after payment.
 - Polished React dashboard (services, pricing rules, customers, balances, payment
@@ -43,7 +43,7 @@ flowchart LR
   or a fully **in-browser demo** engine — selectable at login.
 - AI Summary demo app that meters usage through FiberMeter end-to-end.
 - TypeScript SDK with `recordUsage`, `createCustomer`, `createPaymentRequest`, `getBalance`, and webhook verification.
-- Deployment guides, an auditor review guide, and a phased [ROADMAP](ROADMAP.md).
+- Deployment guides, a product guide, and a phased [ROADMAP](ROADMAP.md).
 
 ## Run it (one command)
 
@@ -67,6 +67,11 @@ docker compose up
 - API → http://localhost:4000
 
 (First run builds the images — a few minutes.)
+
+The container starts the demo's Vite interface. Its metered endpoint is a
+Netlify server function; use the demo service's
+[Netlify development workflow](apps/demo-service/README.md#run-locally) when
+testing the complete standalone summary request locally.
 
 ### Option B — Script (needs pnpm; Docker only for Postgres)
 
@@ -93,7 +98,7 @@ The dashboard (`apps/dashboard`) can be explored two ways:
   `password123`) and the dashboard reads/writes the real API over JWT.
 - **Demo** — click **Explore in demo mode** to run the entire billing engine
   in the browser. No backend, database, or seed required — ideal for a quick
-  look or an offline demo video.
+  look or for offline product exploration.
 
 ```bash
 # Zero-backend preview:
@@ -155,8 +160,7 @@ otherwise, so `pnpm test` is safe to run anywhere.
 
 ## Experience
 
-![webhooks](docs/screenshots/walk-through.mp4)
-Walkthrough Video
+[Product walkthrough video](docs/screenshots/walk-through.mp4)
 
 **Dashboard overview** — services, prepaid balances, and recent metered usage:
 
@@ -190,8 +194,8 @@ and go-to-market.
 ## Documentation
 
 See the [documentation index](docs/README.md) for setup, architecture, API and
-SDK integration, webhooks, Fiber operations, hosted deployment, and the auditor
-walkthrough.
+SDK integration, webhooks, Fiber operations, hosted deployment, and product
+walkthroughs.
 
 ## License
 

@@ -11,8 +11,8 @@ FiberMeter is reusable Fiber Network infrastructure for prepaid balances, servic
 
 **`simulated` is the default and requires no Fiber node, faucet, or channels.**
 The entire product (payment requests, Simulate Paid, balance funding, metering,
-ledger, webhooks) works end-to-end in this mode — it's the path auditors
-should use. Live-only surfaces (**Fund via Fiber** and channel proof) are hidden
+ledger, webhooks) works end-to-end in this mode and is the recommended local
+development path. Live-only surfaces (**Fund via Fiber** and channel proof) are hidden
 by the dashboard when the API reports `simulated`.
 
 There are three ways to operate against Fiber:
@@ -86,8 +86,8 @@ outbound liquidity (`send_payment`) — FiberMeter's own node does not pay itsel
 
 For the **hands-off hosted live demo**, `scripts/autopay.mjs` (npm: `pnpm autopay`)
 plays the customer: it watches the API for live pending payment requests and
-settles each from a second (payer) node, so an auditor can click "Fund via Fiber"
-and watch real settlement with nobody at a terminal. Full droplet runbook:
+settles each from a second payer node, allowing users to test the hosted funding
+flow without operating a wallet during each payment. Full deployment runbook:
 [11-live-hosted-demo.md](11-live-hosted-demo.md). None of this is needed in the
 default `simulated` mode. The dashboard renders the real invoice and watches
 settlement automatically; a local-node command remains available as a technical

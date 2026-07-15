@@ -3,8 +3,8 @@
 #   docker compose -f docker-compose.yml -f docker-compose.live.yml up
 #
 # Runs the SAME db + API + dashboard + demo-service stack, but flips the API to
-# the LIVE Fiber provider and starts a separate, bounded testnet auto-payer so
-# auditors can trigger real settlement without installing a wallet or node.
+# the LIVE Fiber provider and starts a separate, bounded testnet auto-payer for
+# repeatable hosted product testing without manual wallet operation.
 #
 # It expects separate payee (:8237) and payer (:8247) nodes on the host. Native
 # nodes stay there so keys and channel state can be backed up; only the app tier
