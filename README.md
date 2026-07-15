@@ -130,9 +130,16 @@ await meter.recordUsage({
 });
 ```
 
+See the [complete JavaScript SDK guide](docs/05-sdk.md) for client
+authentication, every SDK method, result handling, idempotency, errors, and
+signed webhook verification.
+
 ## Webhooks
 
 FiberMeter signs payloads with HMAC SHA-256 and sends `X-FiberMeter-Event`, `X-FiberMeter-Signature`, and `X-FiberMeter-Timestamp` headers.
+
+See the [webhook guide](docs/06-webhooks.md) for the signature contract,
+receiver implementation, retry behavior, and security guidance.
 
 ## Testing
 

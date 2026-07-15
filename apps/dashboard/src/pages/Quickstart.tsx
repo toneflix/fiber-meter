@@ -107,17 +107,20 @@ const result = await meter.recordUsage({
 
   const verifySnippet = `import { verifyWebhookSignature } from '@fibermeter/sdk'
 
-app.post('/webhooks/fibermeter', (req, res) => {
-  const valid = verifyWebhookSignature({
-    payload: req.rawBody,
-    signature: req.headers['x-fibermeter-signature'],
-    timestamp: req.headers['x-fibermeter-timestamp'],
-    secret: process.env.WEBHOOK_SECRET,
-  })
+app.post('/webhooks/fibermeter', express.raw({ type: 'application/json' }), (req, res) => {
+  const payload = req.body.toString('utf8')
+  const signature = String(req.headers['x-fibermeter-signature'] ?? '')
+  const timestamp = String(req.headers['x-fibermeter-timestamp'] ?? '')
+  const valid = verifyWebhookSignature(
+    payload,
+    signature,
+    process.env.FIBERMETER_WEBHOOK_SECRET,
+    timestamp,
+  )
   if (!valid) return res.status(400).send('invalid signature')
 
-  const event = JSON.parse(req.rawBody)
-  // handle: balance.funded, usage.charged, balance.low, ...
+  const event = JSON.parse(payload)
+  // handle usage.charged
   res.sendStatus(200)
 })`;
 

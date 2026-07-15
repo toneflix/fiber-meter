@@ -39,7 +39,7 @@ export default async (request: Request) => {
     return json({ error: { code: 'validation_error', message: 'A valid request ID is required.' } }, 400)
   }
 
-  const apiUrl = (process.env.FIBERMETER_API_URL || 'http://127.0.0.1:4000/api').replace(/\/$/, '')
+  const apiUrl = (process.env.FIBERMETER_API_URL || 'http://127.0.0.1:4000').replace(/\/$/, '')
   const apiKey = process.env.FIBERMETER_API_KEY
   const customer = process.env.FIBERMETER_CUSTOMER_ID || 'cus_demo_001'
   const service = process.env.FIBERMETER_SERVICE_SLUG || 'ai-summary'
